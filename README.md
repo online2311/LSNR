@@ -2,7 +2,7 @@
 当前脚本适用于 [routeros-mipsbe-6.37](http://download2.mikrotik.com/routeros/6.37/routeros-mipsbe-6.37.npk)  版本 
  LSNR.rsc 适配设备型号：
 ```
-hEX lite
+ hEX lite
  hEX PoE lite
  hEX
  hAP
@@ -13,13 +13,13 @@ hEX lite
 ```
 
 ##变量设定 
-  
-:global w1usr user; “[user]W1宽带账号”
-:global w1pw password; “[password]W1宽带密码”
-:global w1ssid ssidA; “[ssidA]W1无线SSID”
-:global w1ssidpw password; “[password]W1无线密码”
-:global w1disabled no; “[no]w1是否启用” 
-
+```
+:global w1usr user; “[user] W1宽带账号”
+:global w1pw password; “[password] W1宽带密码”
+:global w1ssid ssidA; “[ssidA] W1无线SSID”
+:global w1ssidpw password; “[password] W1无线密码”
+:global w1disabled no; “[no/YES] w1是否启用” 
+```
 
   
 ##使用说明
