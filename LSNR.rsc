@@ -1,4 +1,4 @@
-
+# 适用于 Routeros 6.37 版本
 # w1 相关函数定义
 :global w1usr ad73212126;
 :global w1pw MJpe7rfA;
@@ -42,7 +42,7 @@
 :global wirelessEnabled 0;
 :global interfacewireless 0;
 
-:if ([:len [/system package find name="wireless-cm2" !disabled]] != 0) do={
+:if ([:len [/system package find name="wireless" !disabled]] != 0) do={
 :set wirelessEnabled 1;
 }
 
@@ -176,44 +176,35 @@ set enabled=yes
 add country=canada datapath.bridge=bridge_W1 mode=ap name=Home_W1 \
     security.authentication-types=wpa-psk,wpa2-psk security.encryption=\
     aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) \
-    ssid=($w1ssid)
+    ssid=($w1ssid) hide-ssid=($w1disabled)
 add country=canada datapath.bridge=bridge_W2 mode=ap name=Home_W2 \
     security.authentication-types=wpa-psk,wpa2-psk security.encryption=\
     aes-ccm security.group-encryption=aes-ccm security.passphrase=($w2ssidpw) \
-    ssid=($w2ssid)
+    ssid=($w2ssid) hide-ssid=($w2disabled)
 add country=canada datapath.bridge=bridge_CN2 mode=ap name=Home_CN2 \
     security.authentication-types=wpa-psk,wpa2-psk security.encryption=\
     aes-ccm security.group-encryption=aes-ccm security.passphrase=($cn2ssidpw) \
-    ssid=($cn2ssid)
+    ssid=($cn2ssid) hide-ssid=($cn2disabled)
 add country=canada datapath.bridge=bridge_CN2 mode=ap name=Home_CN2_5G \
     security.authentication-types=wpa-psk,wpa2-psk security.encryption=\
     aes-ccm security.group-encryption=aes-ccm security.passphrase=($cn2ssidpw) \
-    ssid=($cn2ssid . "_5G")
+    ssid=($cn2ssid . "_5G") hide-ssid=($cn2disabled)
 add country=canada datapath.bridge=bridge_W1 mode=ap name=Home_W1_5G \
     security.authentication-types=wpa-psk,wpa2-psk security.encryption=\
     aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw)\
-    ssid=($w1ssid . "_5G")
+    ssid=($w1ssid . "_5G") hide-ssid=($w1disabled)
 add country=canada datapath.bridge=bridge_W2 mode=ap name=Home_W2_5G \
     security.authentication-types=wpa-psk,wpa2-psk security.encryption=\
     aes-ccm security.group-encryption=aes-ccm security.passphrase=($w2ssidpw) \
-    ssid=($w2ssid . "_5G")
+    ssid=($w2ssid . "_5G") hide-ssid=($w2disabled)
 	
 /caps-man provisioning
-
 add action=create-dynamic-enabled hw-supported-modes=gn master-configuration=\
-    Home_W1 name-format=prefix-identity name-prefix=2G disabled=($w1disabled)
-add action=create-dynamic-enabled hw-supported-modes=gn master-configuration=\
-    Home_W2 name-format=prefix-identity name-prefix=2G disabled=($w2disabled)
-add action=create-dynamic-enabled hw-supported-modes=gn master-configuration=\
-    Home_CN2 name-format=prefix-identity name-prefix=2G disabled=($cn2disabled)
-	
-	
+    Home_W1 name-format=prefix-identity name-prefix=2G slave-configurations=\
+    Home_W2,Home_CN2
 add action=create-dynamic-enabled hw-supported-modes=an master-configuration=\
-    Home_W1_5G name-format=prefix-identity name-prefix=5G disabled=($w1disabled)
-add action=create-dynamic-enabled hw-supported-modes=an master-configuration=\
-    Home_W2_5G name-format=prefix-identity name-prefix=5G disabled=($w2disabled)
-add action=create-dynamic-enabled hw-supported-modes=an master-configuration=\
-    Home_CN2_5G name-format=prefix-identity name-prefix=5G disabled=($cn2disabled)
+    Home_W1_5G name-format=prefix-identity name-prefix=5G \
+    slave-configurations=Home_W2_5G,Home_CN2_5G
 	
 
 # wait for firewall&Router
@@ -290,7 +281,7 @@ add action=lookup-only-in-table dst-address=211.136.150.66/32 table=\
 # wait for wireless
 :log info "wirelessEnabled:$wirelessEnabled"
 :log info "interfacewireless:$interfacewireless"
-
+/interface wireless 
 :if ( $wirelessEnabled = 1) do={
 
 
