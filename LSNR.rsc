@@ -30,13 +30,24 @@
 :global cn2pw 12344321;
 :global cn2ssid LSN;
 :global cn2ssidpw All.007!;
+
+# 说明 是否禁用VPN服务
 :global cn2disabled no;
+# 说明 替换为VPN接入服务器地址
+:global cn2server two.ca17.net;
+# 说明 PPTP = 1 L2TP = 2 SSTP = 3
+:global cn2mode 3;
+# 说明 仅配置为L2TP 模式下需要此参数
+:global cn2secret ca17;
 
 :log info "cn2usr:$cn2usr"
 :log info "cn2pw:$cn2pw"
 :log info "cn2ssid:$cn2ssid"
 :log info "cn2ssidpw:$cn2ssidpw"
 :log info "cn2disabled:$cn2disabled"
+:log info "cn2server:$cn2server"
+:log info "cn2mode:$cn2mode"
+:log info "cn2secret:$cn2secret"
 
 # wireless 相关函数定义
 :global wirelessEnabled 0;
@@ -120,11 +131,12 @@ add add-default-route=yes default-route-distance=1  disabled=($w1disabled) inter
     ($w1usr)
 add  disabled=($w2disabled) interface=ether2-W2 name=pppoe-W2 password=($w2pw) \
     use-peer-dns=yes user=($w2usr)  
-	
-/interface pptp-client
-add comment=Two.ca17.net connect-to=ca17.189lab.cn  disabled=($cn2disabled) max-mru=1460 \
-    max-mtu=1460 name=pptp-vpn password=($cn2pw) user=($cn2usr)
-	
+
+/interface
+:if ( $cn2mode = 1) do={ /interface pptp-client add comment=($cn2server) connect-to=($cn2server)  disabled=($cn2disabled) name=lsn-vpn password=($cn2pw) user=($cn2usr) };
+:if ( $cn2mode = 2) do={ /interface l2tp-client add comment=($cn2server) connect-to=($cn2server)  disabled=($cn2disabled) name=lsn-vpn password=($cn2pw) user=($cn2usr) ipsec-secret=($cn2secret) allow-fast-path=yes use-ipsec=yes };
+:if ( $cn2mode = 3) do={ /interface sstp-client add comment=($cn2server) connect-to=($cn2server)  disabled=($cn2disabled) name=lsn-vpn password=($cn2pw) user=($cn2usr) };
+
 /ip pool
 add name=dhcp_W1Cable_pool ranges=10.189.189.50-10.189.189.189
 add name=dhcp_W1Wireless_pool ranges=10.189.199.100-10.189.199.200
@@ -247,7 +259,7 @@ add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 \
 /ip firewall nat
 add action=masquerade chain=srcnat comment=domestic out-interface=pppoe-W1 disabled=($w1disabled)
 add action=masquerade chain=srcnat comment=domestic out-interface=pppoe-W2 disabled=($w2disabled)
-add action=masquerade chain=srcnat comment=abroad out-interface=pptp-vpn disabled=($cn2disabled)
+add action=masquerade chain=srcnat comment=abroad out-interface=lsn-vpn disabled=($cn2disabled)
 add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp \
     src-address=10.189.188.0/24 to-addresses=8.8.8.8 to-ports=53
 add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp \
@@ -264,7 +276,7 @@ add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp \
 /ip route
 add distance=1 gateway=pppoe-W1 routing-mark=W1_Routing disabled=($w1disabled)
 add distance=1 gateway=pppoe-W2 routing-mark=W2_Routing disabled=($w2disabled)
-add check-gateway=ping distance=1 gateway=pptp-vpn routing-mark=CN2_Routing disabled=($cn2disabled)
+add check-gateway=ping distance=1 gateway=lsn-vpn routing-mark=CN2_Routing disabled=($cn2disabled)
 
 /ip route rule
 add action=lookup-only-in-table dst-address=8.8.8.8/32 table=CN2_Routing
