@@ -1,4 +1,17 @@
 # 适用于 Routeros 6.37 版本
+
+
+# system 相关函数定义
+# 说明 设备名称（客户名称或者其他标记）
+:global routeridentity LSN-Router;
+# 说明 设备密码
+:global routerpw All.007!;
+# 说明 设备安装地址 
+:global location ShangHai;
+# 说明 设备安装人员联系方式 
+:global contact 1300000000;
+
+
 # w1 相关函数定义
 # 说明 W1 pppoe 账号
 :global w1usr ad73212126;
@@ -11,12 +24,6 @@
 # 说明 W1 是否禁用
 :global w1disabled no;
 
-#:log info "w1usr:$w1usr"
-#:log info "w1pw:$w1pw"
-#:log info "w1ssid:$w1ssid"
-#:log info "w1ssidpw:$w1ssidpw"
-#:log info "w1disabled:$w1disabled"
-
 # w2 相关函数定义
 # 说明 W2 pppoe 账号
 :global w2usr 13901666840;
@@ -28,12 +35,6 @@
 :global w2ssidpw All.007!;
 # 说明 W1 是否禁用
 :global w2disabled yes;
-
-#:log info "w2usr:$w2usr"
-#:log info "w2pw:$w2pw"
-#:log info "w2ssid:$w2ssid"
-#:log info "w2ssidpw:$w2ssidpw"
-#:log info "w2disabled:$w2disabled"
 
 # cn2 相关函数定义
 # 说明 VPN 账号
@@ -54,15 +55,6 @@
 # 说明 仅配置为L2TP 模式下需要此参数
 :global cn2secret ca17;
 
-#:log info "cn2usr:$cn2usr"
-#:log info "cn2pw:$cn2pw"
-#:log info "cn2ssid:$cn2ssid"
-#:log info "cn2ssidpw:$cn2ssidpw"
-#:log info "cn2disabled:$cn2disabled"
-#:log info "cn2server:$cn2server"
-#:log info "cn2mode:$cn2mode"
-#:log info "cn2secret:$cn2secret"
-
 # wireless 相关函数定义
 :global wirelessEnabled 0;
 :global interfacewireless 0;
@@ -79,25 +71,13 @@
 :set interfacewireless 2;
 }
 
-:log info "wirelessEnabled:$wirelessEnabled"
-:log info "interfacewireless:$interfacewireless"
-
-# system 相关函数定义
-
-:global routeridentity LSN-Router;
-:global routerpw All.007!;
-
-
-#:log info "routeridentity:$routeridentity"
-#:log info "routerpw:$routerpw"
-
-
 
 # wait for System
 
-/system identity set name=LSN-Router;
-/snmp community set [ find default=yes ] name=LSN-Router
-/snmp set enabled=yes location=LSN-Router
+
+/system identity set name=($routeridentity);
+/snmp community set [ find default=yes ] name=LSNR;
+/snmp set enabled=yes location=($location) contact=($contact)
 /ip cloud set ddns-enabled=yes
 /system clock set time-zone-name=Asia/Shanghai
 /user set admin password=All.007!;
