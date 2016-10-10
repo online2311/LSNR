@@ -1,36 +1,50 @@
 # 适用于 Routeros 6.37 版本
 # w1 相关函数定义
+# 说明 W1 pppoe 账号
 :global w1usr ad73212126;
+# 说明 W1 pppoe 密码
 :global w1pw MJpe7rfA;
+# 说明 W1 无线 SSID
 :global w1ssid i1-189;
+# 说明 W1 无线 密码
 :global w1ssidpw All.007!;
+# 说明 W1 是否禁用
 :global w1disabled no;
 
-:log info "w1usr:$w1usr"
-:log info "w1pw:$w1pw"
-:log info "w1ssid:$w1ssid"
-:log info "w1ssidpw:$w1ssidpw"
-:log info "w1disabled:$w1disabled"
+#:log info "w1usr:$w1usr"
+#:log info "w1pw:$w1pw"
+#:log info "w1ssid:$w1ssid"
+#:log info "w1ssidpw:$w1ssidpw"
+#:log info "w1disabled:$w1disabled"
 
 # w2 相关函数定义
+# 说明 W2 pppoe 账号
 :global w2usr 13901666840;
+# 说明 W2 pppoe 密码
 :global w2pw 850361;
+# 说明 W2 无线 SSID
 :global w2ssid i2-139;
+# 说明 W2 无线 密码
 :global w2ssidpw All.007!;
+# 说明 W1 是否禁用
 :global w2disabled yes;
 
-:log info "w2usr:$w2usr"
-:log info "w2pw:$w2pw"
-:log info "w2ssid:$w2ssid"
-:log info "w2ssidpw:$w2ssidpw"
-:log info "w2disabled:$w2disabled"
+#:log info "w2usr:$w2usr"
+#:log info "w2pw:$w2pw"
+#:log info "w2ssid:$w2ssid"
+#:log info "w2ssidpw:$w2ssidpw"
+#:log info "w2disabled:$w2disabled"
 
 # cn2 相关函数定义
+# 说明 VPN 账号
 :global cn2usr 12344321;
+# 说明 VPN 密码
 :global cn2pw 12344321;
+:global cn2usr 12344321;
+# 说明 VPN 无线名称
 :global cn2ssid LSN;
+# 说明 VPN 无线密码
 :global cn2ssidpw All.007!;
-
 # 说明 是否禁用VPN服务
 :global cn2disabled no;
 # 说明 替换为VPN接入服务器地址
@@ -40,14 +54,14 @@
 # 说明 仅配置为L2TP 模式下需要此参数
 :global cn2secret ca17;
 
-:log info "cn2usr:$cn2usr"
-:log info "cn2pw:$cn2pw"
-:log info "cn2ssid:$cn2ssid"
-:log info "cn2ssidpw:$cn2ssidpw"
-:log info "cn2disabled:$cn2disabled"
-:log info "cn2server:$cn2server"
-:log info "cn2mode:$cn2mode"
-:log info "cn2secret:$cn2secret"
+#:log info "cn2usr:$cn2usr"
+#:log info "cn2pw:$cn2pw"
+#:log info "cn2ssid:$cn2ssid"
+#:log info "cn2ssidpw:$cn2ssidpw"
+#:log info "cn2disabled:$cn2disabled"
+#:log info "cn2server:$cn2server"
+#:log info "cn2mode:$cn2mode"
+#:log info "cn2secret:$cn2secret"
 
 # wireless 相关函数定义
 :global wirelessEnabled 0;
@@ -74,8 +88,8 @@
 :global routerpw All.007!;
 
 
-:log info "routeridentity:$routeridentity"
-:log info "routerpw:$routerpw"
+#:log info "routeridentity:$routeridentity"
+#:log info "routerpw:$routerpw"
 
 
 
@@ -291,8 +305,8 @@ add action=lookup-only-in-table dst-address=211.136.150.66/32 table=\
 
 
 # wait for wireless
-:log info "wirelessEnabled:$wirelessEnabled"
-:log info "interfacewireless:$interfacewireless"
+#:log info "wirelessEnabled:$wirelessEnabled"
+#:log info "interfacewireless:$interfacewireless"
 /interface wireless 
 :if ( $wirelessEnabled = 1) do={
 
