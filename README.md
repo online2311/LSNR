@@ -10,6 +10,7 @@
  hAP ac
  RB951Ui-2HnD
  RB951G-2HnD
+ RB850G
 ```
 
 ##变量设定 

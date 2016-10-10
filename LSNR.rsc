@@ -41,7 +41,6 @@
 :global cn2usr 12344321;
 # 说明 VPN 密码
 :global cn2pw 12344321;
-:global cn2usr 12344321;
 # 说明 VPN 无线名称
 :global cn2ssid LSN;
 # 说明 VPN 无线密码
