@@ -33,7 +33,7 @@
 :global w2ssid i2-139;
 # 说明 W2 无线 密码
 :global w2ssidpw All.007!;
-# 说明 W1 是否禁用
+# 说明 W2 是否禁用
 :global w2disabled yes;
 
 # cn2 相关函数定义
@@ -47,11 +47,11 @@
 :global cn2ssidpw All.007!;
 # 说明 是否禁用VPN服务
 :global cn2disabled no;
-# 说明 替换为VPN接入服务器地址
-:global cn2server two.ca17.net;
-# 说明 PPTP = 1 L2TP = 2 SSTP = 3
+# 说明 VPN接入服务器地址
+:global cn2server ca17.189lab.cn;
+# 说明 VPN接入协议 PPTP = 1 L2TP = 2 SSTP = 3
 :global cn2mode 3;
-# 说明 仅配置为L2TP 模式下需要此参数
+# 说明 L2TP 预知共享密钥
 :global cn2secret ca17;
 
 # wireless 相关函数定义
@@ -75,7 +75,7 @@
 
 
 /system identity set name=($routeridentity);
-/snmp community set [ find default=yes ] name=LSNR;
+/snmp community set [ find default=yes ] name=public;
 /snmp set enabled=yes location=($location) contact=($contact)
 /ip cloud set ddns-enabled=yes
 /system clock set time-zone-name=Asia/Shanghai
