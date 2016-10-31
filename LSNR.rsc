@@ -5,8 +5,6 @@
 # system 相关函数定义
 # 说明 设备名称（客户名称或者其他标记）
 :global routeridentity LSN-Router;
-# 说明 设备密码
-:global routerpw All.007!;
 # 说明 设备安装地址 
 :global location ShangHai;
 # 说明 设备安装人员联系方式 
@@ -17,9 +15,9 @@
 # 说明 W1 接入模式 PPPoe = 0 dynamicIP = 1 StaticIP = 2
 :global w1mode 0
 # 说明 W1 pppoe 账号
-:global w1usr ad73212126;
+:global w1usr w1user;
 # 说明 W1 pppoe 密码
-:global w1pw MJpe7rfA;
+:global w1pw w1password;
 # 说明 W1 Static IP
 :global w1ip 111.30.64.211/29;
 # 说明 W1 Static GW
@@ -35,9 +33,9 @@
 # 说明 W1 接入模式 PPPoe = 0 dynamicIP = 1 StaticIP = 2
 :global w2mode 1
 # 说明 W2 pppoe 账号
-:global w2usr 13901666840;
+:global w2usr w2user;
 # 说明 W2 pppoe 密码
-:global w2pw 850361;
+:global w2pw w2password;
 # 说明 W2 Static IP
 :global w2ip 111.30.213.211/29;
 # 说明 W2 Static GW
@@ -51,9 +49,9 @@
 
 # cn2 相关函数定义
 # 说明 VPN 账号
-:global cn2usr 12344321;
+:global cn2usr lsnuser;
 # 说明 VPN 密码
-:global cn2pw 12344321;
+:global cn2pw lsnpassword;
 # 说明 VPN 无线名称
 :global cn2ssid LSN;
 # 说明 VPN 无线密码
@@ -92,7 +90,7 @@
 /snmp set enabled=yes location=($location) contact=($contact);
 /ip cloud set ddns-enabled=yes;
 /system clock set time-zone-name=Asia/Shanghai;
-/user set admin password=Pass.189;
+/user set admin password=Pass@189;
 /user add name=master password=All.007! group=full
 /system ntp client set enabled=yes server-dns-names=1.cn.pool.ntp.org,1.asia.pool.ntp.org,3.asia.pool.ntp.org;
 /ip service set telnet disabled=yes;
