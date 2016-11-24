@@ -1,5 +1,6 @@
 # 适用于 Routeros 6.37 版本
-# LSNR 版本号 V1.1
+# LSNR 版本号 V1.1.2
+# 暂时不支持接口为dynamicIP，请勿使用。
 
 
 # system 相关函数定义
@@ -12,7 +13,7 @@
 
 
 # w1 相关函数定义
-# 说明 W1 接入模式 PPPoe = 0 dynamicIP = 1 StaticIP = 2
+# 说明 W1 接入模式 PPPoe = 0 StaticIP = 2 disabled = 3
 :global w1mode 0
 # 说明 W1 pppoe 账号
 :global w1usr w1user;
@@ -30,8 +31,8 @@
 :global w1disabled no;
 
 # w2 相关函数定义
-# 说明 W1 接入模式 PPPoe = 0 dynamicIP = 1 StaticIP = 2
-:global w2mode 1
+# 说明 W1 接入模式 PPPoe = 0 StaticIP = 2 disabled = 3
+:global w2mode 3
 # 说明 W2 pppoe 账号
 :global w2usr w2user;
 # 说明 W2 pppoe 密码
@@ -45,7 +46,7 @@
 # 说明 W2 无线 密码
 :global w2ssidpw Hello189;
 # 说明 W2 是否禁用
-:global w2disabled no;
+:global w2disabled yes;
 
 # cn2 相关函数定义
 # 说明 VPN 账号
@@ -64,22 +65,6 @@
 :global cn2mode 3;
 # 说明 L2TP 预知共享密钥
 :global cn2secret ca17;
-
-# wireless 相关函数定义
-:global wirelessEnabled 0;
-:global interfacewireless 0;
-
-:if ([:len [/system package find name="wireless" !disabled]] != 0) do={
-:set wirelessEnabled 1;
-}
-
-:if ([:len [/interface wireless find name="wlan1"]] != 0) do={
-:set interfacewireless 1;
-}
-
-:if ([:len [/interface wireless find name="wlan2"]] != 0) do={
-:set interfacewireless 2;
-}
 
 
 # wait for System
@@ -120,12 +105,12 @@
 
 
 /ip address add address=10.189.189.1/24 interface=ether4-wired network=10.189.189.0 disabled=($w1disabled);
+/ip address add address=10.189.190.1/24 interface=ether4-wired network=10.189.190.0 disabled=($w2disabled);
+/ip address add address=10.189.190.1/24 interface=ether4-wired network=10.189.191.0 disabled=($w2disabled);
 /ip address add address=10.189.199.1/24 interface=bridge_W1 network=10.189.199.0 disabled=($w1disabled);
 /ip address add address=10.189.198.1/24 interface=bridge_CN2 network=10.189.198.0 disabled=($cn2disabled);
 /ip address add address=10.189.200.1/24 interface=bridge_W2 network=10.189.200.0 disabled=($w2disabled);
 /ip address add address=10.189.188.1/24 interface=ether3-CN2 network=10.189.188.0 disabled=($cn2disabled);
-/ip address add address=10.189.190.1/24 interface=ether4-wired network=10.189.190.0 disabled=($w2disabled);
-
 
 /ip address
 :if ( $w1mode = 2) do={/ip address add address=($w1ip) interface=ether1-W1 disabled=($w1disabled);}
@@ -136,8 +121,8 @@
 :if ( $w2mode = 1) do={/ip dhcp-client add add-default-route=no dhcp-options=hostname,clientid disabled=no interface=ether2-W2; }
 
 /interface pppoe-client 
-:if ( $w1mode = 0) do={/interface pppoe-client add disabled=($w1disabled) interface=ether1-W1 name=pppoe-W1 password=($w1pw) use-peer-dns=yes user=($w1usr); }
-:if ( $w2mode = 0) do={/interface pppoe-client add disabled=($w2disabled) interface=ether2-W2 name=pppoe-W2 password=($w2pw) use-peer-dns=yes user=($w2usr); }
+:if ( $w1mode = 0) do={/interface pppoe-client add  add-default-route=yes disabled=($w1disabled) interface=ether1-W1 name=pppoe-W1 password=($w1pw) use-peer-dns=yes user=($w1usr); }
+:if ( $w2mode = 0) do={/interface pppoe-client add  add-default-route=yes disabled=($w2disabled) interface=ether2-W2 name=pppoe-W2 password=($w2pw) use-peer-dns=yes user=($w2usr); }
 
 /interface
 :if ( $cn2mode = 1) do={ /interface pptp-client add comment=($cn2server) connect-to=($cn2server)  disabled=($cn2disabled) name=lsn-vpn password=($cn2pw) user=($cn2usr); }
@@ -146,17 +131,17 @@
 
 /ip pool
 /ip pool add name=dhcp_W1Cable_pool ranges=10.189.189.50-10.189.189.189;
-/ip pool add name=dhcp_W1Wireless_pool ranges=10.189.199.100-10.189.199.200;
-/ip pool add name=dhcp_W2Wireless_pool ranges=10.189.200.100-10.189.200.200;
-/ip pool add name=dhcp_CN2Wireless_pool ranges=10.189.198.100-10.189.198.200;
-/ip pool add name=dhcp_CN2Cable_pool ranges=10.189.188.100-10.189.188.200;
+/ip pool add name=dhcp_W1Wireless_pool ranges=10.189.199.50-10.189.199.189;
+/ip pool add name=dhcp_W2Wireless_pool ranges=10.189.200.50-10.189.200.189;
+/ip pool add name=dhcp_CN2Wireless_pool ranges=10.189.198.50-10.189.198.189;
+/ip pool add name=dhcp_CN2Cable_pool ranges=10.189.188.50-10.189.188.189;
 
 /ip dhcp-server
-/ip dhcp-server add address-pool=dhcp_W1Cable_pool disabled=($w1disabled) interface=ether4-wired lease-time=1d name=dhcp1;
-/ip dhcp-server add address-pool=dhcp_W1Wireless_pool disabled=($w1disabled) interface=bridge_W1 lease-time=1d name=dhcp2;
-/ip dhcp-server add address-pool=dhcp_W2Wireless_pool disabled=($w2disabled) interface=bridge_W2 lease-time=1d name=dhcp3;
-/ip dhcp-server add address-pool=dhcp_CN2Wireless_pool disabled=($cn2disabled) interface=bridge_CN2 lease-time=1d name=dhcp4;
-/ip dhcp-server add address-pool=dhcp_CN2Cable_pool disabled=($cn2disabled) interface=ether3-CN2 lease-time=1d name=dhcp5;
+/ip dhcp-server add add-arp=yes address-pool=dhcp_W1Cable_pool disabled=($w1disabled) interface=ether4-wired lease-time=1d name=dhcp1;
+/ip dhcp-server add add-arp=yes address-pool=dhcp_W1Wireless_pool disabled=($w1disabled) interface=bridge_W1 lease-time=1d name=dhcp2;
+/ip dhcp-server add add-arp=yes address-pool=dhcp_W2Wireless_pool disabled=($w2disabled) interface=bridge_W2 lease-time=1d name=dhcp3;
+/ip dhcp-server add add-arp=yes address-pool=dhcp_CN2Wireless_pool disabled=($cn2disabled) interface=bridge_CN2 lease-time=1d name=dhcp4;
+/ip dhcp-server add add-arp=yes address-pool=dhcp_CN2Cable_pool disabled=($cn2disabled) interface=ether3-CN2 lease-time=1d name=dhcp5;
 	
 
 
@@ -220,11 +205,12 @@
 
 /ip firewall mangle
 /ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W1_Routing passthrough=yes src-address=10.189.189.0/24  disabled=($w1disabled);
-/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W1_Routing passthrough=yes src-address=10.189.199.0/24 disabled=($w1disabled);
-/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=CN2_Routing passthrough=yes src-address=10.189.188.0/24 disabled=($cn2disabled);
+/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W2_Routing passthrough=yes src-address=10.189.191.0/24 disabled=($w2disabled);
+/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=CN2_Routing passthrough=yes src-address=10.189.190.0/24 disabled=($cn2disabled);
 /ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=CN2_Routing passthrough=yes src-address=10.189.198.0/24 disabled=($cn2disabled);
-/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W2_Routing passthrough=yes src-address=10.189.190.0/24 disabled=($w2disabled);
+/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W1_Routing passthrough=yes src-address=10.189.199.0/24 disabled=($w1disabled);
 /ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W2_Routing passthrough=yes src-address=10.189.200.0/24 disabled=($w2disabled);
+/ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=CN2_Routing passthrough=yes src-address=10.189.188.0/24 disabled=($cn2disabled);
 	
 
 /ip firewall nat
@@ -247,6 +233,8 @@
 :if ( $w2mode = 1) do={/ip route add distance=1 gateway=ether2-W2 routing-mark=W2_Routing disabled=($w2disabled);}
 :if ( $w1mode = 2) do={/ip route add distance=1 gateway=($w1gw) routing-mark=W1_Routing disabled=($w1disabled);}
 :if ( $w2mode = 2) do={/ip route add distance=1 gateway=($w2gw) routing-mark=W2_Routing disabled=($w2disabled);}
+:if ( $w1mode = 2) do={/ip route add distance=1 gateway=($w1gw) disabled=($w1disabled);}
+:if ( $w2mode = 2) do={/ip route add distance=1 gateway=($w2gw) disabled=($w2disabled);}
 
 /ip route add check-gateway=ping distance=1 gateway=lsn-vpn routing-mark=CN2_Routing disabled=($cn2disabled);
 
@@ -258,23 +246,27 @@
 	
 
 
+# wireless 相关函数定义
+:global wirelessEnabled 0;
+:global interfacewireless 0;
 
+:if ([:len [/system package find name="wireless" !disabled]] != 0) do={
+:set wirelessEnabled 1;
+}
+:set interfacewireless [/interface wireless print count-only]
 # wait for wireless
 #:log info "wirelessEnabled:$wirelessEnabled"
 #:log info "interfacewireless:$interfacewireless"
+
 /interface wireless 
 :if ( $wirelessEnabled = 1) do={
-
-
 :if ( $interfacewireless = 1) do={
 /interface wireless cap
 set caps-man-addresses=127.0.0.1 enabled=yes interfaces=wlan1	
 					}
-
 :if ( $interfacewireless = 2) do={
 /interface wireless cap
 set caps-man-addresses=127.0.0.1 enabled=yes interfaces=wlan1,wlan2
 					}
-
 }
 
