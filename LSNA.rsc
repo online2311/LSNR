@@ -1,10 +1,10 @@
 # 适用于 Routeros 6.37 版本
-# LSNA 版本号 V0.0.1
+# LSNA 版本号 V1.0.0
 
 
 # system 相关函数定义
 # 说明 设备名称（客户名称或者其他标记）
-:global routeridentity LSN-Router;
+:global routeridentity LSNA-Router;
 # 说明 设备安装地址 
 :global location ShangHai;
 # 说明 设备安装人员联系方式 
@@ -13,7 +13,7 @@
 
 # w1 相关函数定义
 # 说明 W1 接入模式 PPPoe = 0 StaticIP = 2 disabled = 3
-:global w1mode 2
+:global w1mode 0
 # 说明 pppoe 账号
 :global w1usr w1user;
 # 说明 pppoe 密码
@@ -58,11 +58,9 @@
 /ip service set api disabled=yes;
 /ip service set api-ssl disabled=yes;
 
-
-
-/interface ethernet set [ find default-name=ether3 ] master-port=ether2;
-/interface ethernet set [ find default-name=ether4 ] master-port=ether2;
-/interface ethernet set [ find default-name=ether5 ] master-port=ether2;
+/interface ethernet set ether3 master-port=ether2;
+/interface ethernet set ether4 master-port=ether2;
+/interface ethernet set ether5 master-port=ether2;
 /interface bridge add name=bridge_W1 disabled=($w1disabled);
 
 /interface

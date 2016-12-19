@@ -1,11 +1,10 @@
 # 适用于 Routeros 6.37 版本
-# LSNR 版本号 V1.1.2
-# 暂时不支持接口为dynamicIP，请勿使用。
+# LSNR 版本号 V1.2.0
 
 
 # system 相关函数定义
 # 说明 设备名称（客户名称或者其他标记）
-:global routeridentity LSN-Router;
+:global routeridentity LSNR-Router;
 # 说明 设备安装地址 
 :global location ShangHai;
 # 说明 设备安装人员联系方式 
@@ -66,7 +65,7 @@
 # 说明 L2TP 预知共享密钥
 :global cn2secret ca17;
 
-
+:delay 1s;
 # wait for System
 
 
@@ -87,7 +86,7 @@
 
 
 
-
+:delay 1s;
 # wait for interfaces
 
 
@@ -96,33 +95,27 @@
 /interface bridge add name=bridge_W1 disabled=($w1disabled);
 /interface bridge add name=bridge_W2 disabled=($w2disabled);
 
+/interface ethernet set ether5 master-port=ether4;
 
-/interface ethernet set [ find default-name=ether1 ] name=ether1-W1;
-/interface ethernet set [ find default-name=ether2 ] name=ether2-W2;
-/interface ethernet set [ find default-name=ether3 ] name=ether3-CN2;
-/interface ethernet set [ find default-name=ether4 ] name=ether4-wired;
-/interface ethernet set [ find default-name=ether5 ] master-port=ether4-wired name=ether5-wired;
-
-
-/ip address add address=10.189.189.1/24 interface=ether4-wired network=10.189.189.0 disabled=($w1disabled);
-/ip address add address=10.189.190.1/24 interface=ether4-wired network=10.189.190.0 disabled=($w2disabled);
-/ip address add address=10.189.190.1/24 interface=ether4-wired network=10.189.191.0 disabled=($w2disabled);
+/ip address add address=10.189.189.1/24 interface=ether4 network=10.189.189.0 disabled=($w1disabled);
+/ip address add address=10.189.190.1/24 interface=ether4 network=10.189.190.0 disabled=($w2disabled);
+/ip address add address=10.189.191.1/24 interface=ether4 network=10.189.191.0 disabled=($w2disabled);
 /ip address add address=10.189.199.1/24 interface=bridge_W1 network=10.189.199.0 disabled=($w1disabled);
 /ip address add address=10.189.198.1/24 interface=bridge_CN2 network=10.189.198.0 disabled=($cn2disabled);
 /ip address add address=10.189.200.1/24 interface=bridge_W2 network=10.189.200.0 disabled=($w2disabled);
-/ip address add address=10.189.188.1/24 interface=ether3-CN2 network=10.189.188.0 disabled=($cn2disabled);
+/ip address add address=10.189.188.1/24 interface=ether3 network=10.189.188.0 disabled=($cn2disabled);
 
 /ip address
-:if ( $w1mode = 2) do={/ip address add address=($w1ip) interface=ether1-W1 disabled=($w1disabled);}
-:if ( $w2mode = 2) do={/ip address add address=($w2ip) interface=ether2-W2 disabled=($w2disabled);}
+:if ( $w1mode = 2) do={/ip address add address=($w1ip) interface=ether1 disabled=($w1disabled);}
+:if ( $w2mode = 2) do={/ip address add address=($w2ip) interface=ether2 disabled=($w2disabled);}
 
 /ip dhcp-client 
-:if ( $w1mode = 1) do={/ip dhcp-client add add-default-route=no dhcp-options=hostname,clientid disabled=no interface=ether1-W1; }
-:if ( $w2mode = 1) do={/ip dhcp-client add add-default-route=no dhcp-options=hostname,clientid disabled=no interface=ether2-W2; }
+:if ( $w1mode = 1) do={/ip dhcp-client add add-default-route=no dhcp-options=hostname,clientid disabled=no interface=ether1; }
+:if ( $w2mode = 1) do={/ip dhcp-client add add-default-route=no dhcp-options=hostname,clientid disabled=no interface=ether2; }
 
 /interface pppoe-client 
-:if ( $w1mode = 0) do={/interface pppoe-client add  add-default-route=yes disabled=($w1disabled) interface=ether1-W1 name=pppoe-W1 password=($w1pw) use-peer-dns=yes user=($w1usr); }
-:if ( $w2mode = 0) do={/interface pppoe-client add  add-default-route=yes disabled=($w2disabled) interface=ether2-W2 name=pppoe-W2 password=($w2pw) use-peer-dns=yes user=($w2usr); }
+:if ( $w1mode = 0) do={/interface pppoe-client add  add-default-route=yes disabled=($w1disabled) interface=ether1 name=pppoe-W1 password=($w1pw) use-peer-dns=yes user=($w1usr); }
+:if ( $w2mode = 0) do={/interface pppoe-client add  add-default-route=yes disabled=($w2disabled) interface=ether2 name=pppoe-W2 password=($w2pw) use-peer-dns=yes user=($w2usr); }
 
 /interface
 :if ( $cn2mode = 1) do={ /interface pptp-client add comment=($cn2server) connect-to=($cn2server)  disabled=($cn2disabled) name=lsn-vpn password=($cn2pw) user=($cn2usr); }
@@ -137,11 +130,11 @@
 /ip pool add name=dhcp_CN2Cable_pool ranges=10.189.188.50-10.189.188.189;
 
 /ip dhcp-server
-/ip dhcp-server add add-arp=yes address-pool=dhcp_W1Cable_pool disabled=($w1disabled) interface=ether4-wired lease-time=1d name=dhcp1;
-/ip dhcp-server add add-arp=yes address-pool=dhcp_W1Wireless_pool disabled=($w1disabled) interface=bridge_W1 lease-time=1d name=dhcp2;
-/ip dhcp-server add add-arp=yes address-pool=dhcp_W2Wireless_pool disabled=($w2disabled) interface=bridge_W2 lease-time=1d name=dhcp3;
-/ip dhcp-server add add-arp=yes address-pool=dhcp_CN2Wireless_pool disabled=($cn2disabled) interface=bridge_CN2 lease-time=1d name=dhcp4;
-/ip dhcp-server add add-arp=yes address-pool=dhcp_CN2Cable_pool disabled=($cn2disabled) interface=ether3-CN2 lease-time=1d name=dhcp5;
+/ip dhcp-server add address-pool=dhcp_W1Cable_pool disabled=($w1disabled) interface=ether4 lease-time=1d name=dhcp1;
+/ip dhcp-server add address-pool=dhcp_W1Wireless_pool disabled=($w1disabled) interface=bridge_W1 lease-time=1d name=dhcp2;
+/ip dhcp-server add address-pool=dhcp_W2Wireless_pool disabled=($w2disabled) interface=bridge_W2 lease-time=1d name=dhcp3;
+/ip dhcp-server add address-pool=dhcp_CN2Wireless_pool disabled=($cn2disabled) interface=bridge_CN2 lease-time=1d name=dhcp4;
+/ip dhcp-server add address-pool=dhcp_CN2Cable_pool disabled=($cn2disabled) interface=ether3 lease-time=1d name=dhcp5;
 	
 
 
@@ -155,11 +148,13 @@
 	
 /ip dns set servers=202.96.209.133,114.114.114.114;
 
+/ip neighbor discovery set [find name="ether1"] discover=no
+/ip neighbor discovery set [find name="ether2"] discover=no
 
 	
 	
 
-
+:delay 1s;
 # wait for capsman
 
 /caps-man manager set enabled=yes ;
@@ -176,7 +171,7 @@
 /caps-man provisioning add action=create-dynamic-enabled hw-supported-modes=gn master-configuration=Home_W1 name-format=prefix-identity name-prefix=2G slave-configurations=Home_W2,Home_CN2;
 /caps-man provisioning add action=create-dynamic-enabled hw-supported-modes=an master-configuration=Home_W1_5G name-format=prefix-identity name-prefix=5G slave-configurations=Home_W2_5G,Home_CN2_5G;
 	
-
+:delay 1s;
 # wait for firewall&Router
 
 /ip firewall filter
@@ -189,19 +184,19 @@
 :if ( $w1mode = 0) do={/ip firewall filter add action=accept chain=input dst-port=8291,8000,80,21 in-interface=pppoe-W1 protocol=tcp ;}
 :if ( $w1mode = 0) do={/ip firewall filter add action=accept chain=input dst-port=161 in-interface=pppoe-W1 protocol=udp ;}
 :if ( $w1mode = 0) do={/ip firewall filter add action=drop chain=input comment="default configuration" in-interface=pppoe-W1 ;}
-:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=8291,8000,80,21 in-interface=ether1-W1 protocol=tcp ;}
-:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=161 in-interface=ether1-W1 protocol=udp ;}
-:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=drop chain=input comment="default configuration" in-interface=ether1-W1 ;}
+:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=8291,8000,80,21 in-interface=ether1 protocol=tcp ;}
+:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=161 in-interface=ether1 protocol=udp ;}
+:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=drop chain=input comment="default configuration" in-interface=ether1 ;}
 :if ( $w2mode = 0) do={/ip firewall filter add action=accept chain=input dst-port=8291,8000,80,21 in-interface=pppoe-W2 protocol=tcp ;}
 :if ( $w2mode = 0) do={/ip firewall filter add action=accept chain=input dst-port=161 in-interface=pppoe-W2 protocol=udp ;}
 :if ( $w2mode = 0) do={/ip firewall filter add action=drop chain=input comment="default configuration" in-interface=pppoe-W2 ;}
-:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=8291,8000,80,21 in-interface=ether2-W2 protocol=tcp ;}
-:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=161 in-interface=ether2-W2 protocol=udp ;}
-:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=drop chain=input comment="default configuration" in-interface=ether2-W2 ;}
+:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=8291,8000,80,21 in-interface=ether2 protocol=tcp ;}
+:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=accept chain=input dst-port=161 in-interface=ether2 protocol=udp ;}
+:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=drop chain=input comment="default configuration" in-interface=ether2 ;}
 :if ( $w1mode = 0) do={/ip firewall filter add action=drop chain=input in-interface=pppoe-W1 protocol=udp src-port=53 ;}
 :if ( $w2mode = 0) do={/ip firewall filter add action=drop chain=input in-interface=pppoe-W2 protocol=udp src-port=53 ;}
-:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=drop chain=input in-interface=ether1-W1 protocol=udp src-port=53 ;}
-:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=drop chain=input in-interface=ether2-W2 protocol=udp src-port=53 ;}
+:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall filter add action=drop chain=input in-interface=ether1 protocol=udp src-port=53 ;}
+:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall filter add action=drop chain=input in-interface=ether2 protocol=udp src-port=53 ;}
 
 /ip firewall mangle
 /ip firewall mangle add action=mark-routing chain=prerouting dst-address=!10.189.0.0/16 new-routing-mark=W1_Routing passthrough=yes src-address=10.189.189.0/24  disabled=($w1disabled);
@@ -216,8 +211,8 @@
 /ip firewall nat
 :if ( $w1mode = 0) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=pppoe-W1 disabled=($w1disabled);}
 :if ( $w2mode = 0) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=pppoe-W2 disabled=($w2disabled);}
-:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=ether1-W1 disabled=($w1disabled);}
-:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=ether2-W2 disabled=($w2disabled);}
+:if ( $w1mode = 1||$w1mode = 2) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=ether1 disabled=($w1disabled);}
+:if ( $w2mode = 1||$w2mode = 2) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=ether2 disabled=($w2disabled);}
 /ip firewall nat add action=masquerade chain=srcnat comment=abroad out-interface=lsn-vpn disabled=($cn2disabled);
 /ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.188.0/24 to-addresses=8.8.8.8 to-ports=53;
 /ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.198.0/24 to-addresses=8.8.8.8 to-ports=53;
@@ -229,8 +224,8 @@
 /ip route
 :if ( $w1mode = 0) do={/ip route add distance=1 gateway=pppoe-W1 routing-mark=W1_Routing disabled=($w1disabled);}
 :if ( $w2mode = 0) do={/ip route add distance=1 gateway=pppoe-W2 routing-mark=W2_Routing disabled=($w2disabled);}
-:if ( $w1mode = 1) do={/ip route add distance=1 gateway=ether1-W1 routing-mark=W1_Routing disabled=($w1disabled);}
-:if ( $w2mode = 1) do={/ip route add distance=1 gateway=ether2-W2 routing-mark=W2_Routing disabled=($w2disabled);}
+:if ( $w1mode = 1) do={/ip route add distance=1 gateway=ether1 routing-mark=W1_Routing disabled=($w1disabled);}
+:if ( $w2mode = 1) do={/ip route add distance=1 gateway=ether2 routing-mark=W2_Routing disabled=($w2disabled);}
 :if ( $w1mode = 2) do={/ip route add distance=1 gateway=($w1gw) routing-mark=W1_Routing disabled=($w1disabled);}
 :if ( $w2mode = 2) do={/ip route add distance=1 gateway=($w2gw) routing-mark=W2_Routing disabled=($w2disabled);}
 :if ( $w1mode = 2) do={/ip route add distance=1 gateway=($w1gw) disabled=($w1disabled);}
@@ -245,7 +240,7 @@
 /ip route rule add action=lookup-only-in-table dst-address=211.136.150.66/32 table=W2_Routing;
 	
 
-
+:delay 1s;
 # wireless 相关函数定义
 :global wirelessEnabled 0;
 :global interfacewireless 0;
