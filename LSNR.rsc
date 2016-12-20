@@ -9,6 +9,8 @@
 :global location ShangHai;
 # 说明 设备安装人员联系方式 
 :global contact 1300000000;
+# DNS劫持 开启=0 关闭=1
+:global dnsmode 0
 
 
 # w1 相关函数定义
@@ -140,13 +142,13 @@
 
 
 /ip dhcp-server network
-/ip dhcp-server network add address=10.189.188.0/24 caps-manager=10.189.188.1 dns-server=8.8.8.8,208.67.220.220 gateway=10.189.188.1;
-/ip dhcp-server network add address=10.189.189.0/24 caps-manager=10.189.189.1 dns-server=223.5.5.5,114.114.114.114 gateway=10.189.189.1;
-/ip dhcp-server network add address=10.189.198.0/24 dns-server=8.8.8.8,208.67.220.220 gateway=10.189.198.1;
-/ip dhcp-server network add address=10.189.199.0/24 dns-server=223.5.5.5,114.114.114.114 gateway=10.189.199.1;
-/ip dhcp-server network add address=10.189.200.0/24 dns-server=223.5.5.5,114.114.114.114 gateway=10.189.200.1;
+/ip dhcp-server network add address=10.189.188.0/24 caps-manager=10.189.188.1 dns-server=180.168.254.8,180.76.76.76 gateway=10.189.188.1;
+/ip dhcp-server network add address=10.189.189.0/24 caps-manager=10.189.189.1 dns-server=180.168.254.8,180.76.76.76 gateway=10.189.189.1;
+/ip dhcp-server network add address=10.189.198.0/24 dns-server=180.168.254.8,180.76.76.76 gateway=10.189.198.1;
+/ip dhcp-server network add address=10.189.199.0/24 dns-server=180.168.254.8,180.76.76.76 gateway=10.189.199.1;
+/ip dhcp-server network add address=10.189.200.0/24 dns-server=180.168.254.8,180.76.76.76 gateway=10.189.200.1;
 	
-/ip dns set servers=202.96.209.133,114.114.114.114;
+/ip dns set servers=180.168.254.8,202.96.209.133;
 
 /ip neighbor discovery set [find name="ether1"] discover=no
 /ip neighbor discovery set [find name="ether2"] discover=no
@@ -214,12 +216,7 @@
 :if ( $w1mode = 1||$w1mode = 2) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=ether1 disabled=($w1disabled);}
 :if ( $w2mode = 1||$w2mode = 2) do={/ip firewall nat add action=masquerade chain=srcnat comment=domestic out-interface=ether2 disabled=($w2disabled);}
 /ip firewall nat add action=masquerade chain=srcnat comment=abroad out-interface=lsn-vpn disabled=($cn2disabled);
-/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.188.0/24 to-addresses=8.8.8.8 to-ports=53;
-/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.198.0/24 to-addresses=8.8.8.8 to-ports=53;
-/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.189.0/24 to-addresses=180.168.255.118 to-ports=53;
-/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.199.0/24 to-addresses=180.168.255.118 to-ports=53;
-/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.190.0/24 to-addresses=211.136.150.66 to-ports=53;
-/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.200.0/24 to-addresses=211.136.150.66 to-ports=53;
+:if ( $dnsmode = 0) do={/ip firewall nat add action=dst-nat chain=dstnat comment="DNS nat" dst-port=53 protocol=udp src-address=10.189.0.0/16 to-addresses=180.168.254.8 to-ports=53;}
 	
 /ip route
 :if ( $w1mode = 0) do={/ip route add distance=1 gateway=pppoe-W1 routing-mark=W1_Routing disabled=($w1disabled);}
@@ -234,7 +231,7 @@
 /ip route add check-gateway=ping distance=1 gateway=lsn-vpn routing-mark=CN2_Routing disabled=($cn2disabled);
 
 /ip route rule
-/ip route rule add action=lookup-only-in-table dst-address=8.8.8.8/32 table=CN2_Routing;
+/ip route rule add action=lookup-only-in-table dst-address=180.168.254.8/32 table=CN2_Routing;
 /ip route rule add action=lookup-only-in-table dst-address=208.67.220.220/32 table=CN2_Routing;
 /ip route rule add action=lookup-only-in-table dst-address=180.168.255.118/32 table=W1_Routing;
 /ip route rule add action=lookup-only-in-table dst-address=211.136.150.66/32 table=W2_Routing;
