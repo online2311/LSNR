@@ -100,7 +100,7 @@
 /interface ethernet set ether5 master-port=ether4;
 
 /ip address add address=10.189.189.1/24 interface=ether4 network=10.189.189.0 disabled=($w1disabled);
-/ip address add address=10.189.190.1/24 interface=ether4 network=10.189.190.0 disabled=($w2disabled);
+/ip address add address=10.189.190.1/24 interface=ether4 network=10.189.190.0 disabled=($cn2disabled);
 /ip address add address=10.189.191.1/24 interface=ether4 network=10.189.191.0 disabled=($w2disabled);
 /ip address add address=10.189.199.1/24 interface=bridge_W1 network=10.189.199.0 disabled=($w1disabled);
 /ip address add address=10.189.198.1/24 interface=bridge_CN2 network=10.189.198.0 disabled=($cn2disabled);
