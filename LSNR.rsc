@@ -25,7 +25,7 @@
 # 说明 W1 Static GW
 :global w1gw 111.30.64.210;
 # 说明 W1 无线 SSID
-:global w1ssid i1-189;
+:global w1ssid i189;
 # 说明 W1 无线 密码
 :global w1ssidpw Hello189;
 # 说明 W1 是否禁用
@@ -43,7 +43,7 @@
 # 说明 W2 Static GW
 :global w2gw 111.30.213.210;
 # 说明 W2 无线 SSID
-:global w2ssid i2-139;
+:global w2ssid i2;
 # 说明 W2 无线 密码
 :global w2ssidpw Hello189;
 # 说明 W2 是否禁用
@@ -162,12 +162,12 @@
 /caps-man manager set enabled=yes ;
 	
 /caps-man configuration
-/caps-man configuration add country=canada datapath.bridge=bridge_W1 mode=ap name=Home_W1 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid) hide-ssid=($w1disabled);
-/caps-man configuration add country=canada datapath.bridge=bridge_W2 mode=ap name=Home_W2 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w2ssidpw) ssid=($w2ssid) hide-ssid=($w2disabled);
-/caps-man configuration add country=canada datapath.bridge=bridge_CN2 mode=ap name=Home_CN2 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($cn2ssidpw) ssid=($cn2ssid) hide-ssid=($cn2disabled);
-/caps-man configuration add country=canada datapath.bridge=bridge_CN2 mode=ap name=Home_CN2_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($cn2ssidpw) ssid=("5G-" . $cn2ssid) hide-ssid=($cn2disabled);
-/caps-man configuration add country=canada datapath.bridge=bridge_W1 mode=ap name=Home_W1_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=("5G-" . $w1ssid) hide-ssid=($w1disabled);
-/caps-man configuration add country=canada datapath.bridge=bridge_W2 mode=ap name=Home_W2_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w2ssidpw) ssid=("5G-" . $w2ssid) hide-ssid=($w2disabled);
+/caps-man configuration add country=canada datapath.bridge=bridge_W1 mode=ap name=Home_W1 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid."-2.4G") hide-ssid=($w1disabled);
+/caps-man configuration add country=canada datapath.bridge=bridge_W2 mode=ap name=Home_W2 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w2ssidpw) ssid=($w2ssid."-2.4G") hide-ssid=($w2disabled);
+/caps-man configuration add country=canada datapath.bridge=bridge_CN2 mode=ap name=Home_CN2 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($cn2ssidpw) ssid=($cn2ssid."-2.4G") hide-ssid=($cn2disabled);
+/caps-man configuration add country=canada datapath.bridge=bridge_CN2 mode=ap name=Home_CN2_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($cn2ssidpw) ssid=($cn2ssid) hide-ssid=($cn2disabled);
+/caps-man configuration add country=canada datapath.bridge=bridge_W1 mode=ap name=Home_W1_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid) hide-ssid=($w1disabled);
+/caps-man configuration add country=canada datapath.bridge=bridge_W2 mode=ap name=Home_W2_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w2ssidpw) ssid=($w2ssid) hide-ssid=($w2disabled);
 	
 /caps-man provisioning 
 /caps-man provisioning add action=create-dynamic-enabled hw-supported-modes=gn master-configuration=Home_W1 name-format=prefix-identity name-prefix=2G slave-configurations=Home_W2,Home_CN2;
