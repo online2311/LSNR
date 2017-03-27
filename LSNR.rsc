@@ -1,5 +1,5 @@
-# 适用于 Routeros 6.37 版本
-# LSNR 版本号 V1.2.0
+# 适用于 Routeros 6.38 版本
+# LSNR 版本号 V1.3.0128
 
 
 # system 相关函数定义
@@ -17,13 +17,13 @@
 # 说明 W1 接入模式 PPPoe = 0 StaticIP = 2 disabled = 3
 :global w1mode 0
 # 说明 W1 pppoe 账号
-:global w1usr w1user;
+:global w1usr ad66161330;
 # 说明 W1 pppoe 密码
-:global w1pw w1password;
+:global w1pw Mmmf7jMj;
 # 说明 W1 Static IP
-:global w1ip 111.30.64.211/29;
+:global w1ip 192.168.1.189/24;
 # 说明 W1 Static GW
-:global w1gw 111.30.64.210;
+:global w1gw 192.168.1.1;
 # 说明 W1 无线 SSID
 :global w1ssid i189;
 # 说明 W1 无线 密码
@@ -39,9 +39,9 @@
 # 说明 W2 pppoe 密码
 :global w2pw w2password;
 # 说明 W2 Static IP
-:global w2ip 111.30.213.211/29;
+:global w2ip 192.168.1.189/24;
 # 说明 W2 Static GW
-:global w2gw 111.30.213.210;
+:global w2gw 192.168.1.1;
 # 说明 W2 无线 SSID
 :global w2ssid i2;
 # 说明 W2 无线 密码
@@ -51,9 +51,9 @@
 
 # cn2 相关函数定义
 # 说明 VPN 账号
-:global cn2usr lsnuser;
+:global cn2usr xubaohua;
 # 说明 VPN 密码
-:global cn2pw lsnpassword;
+:global cn2pw Hello189;
 # 说明 VPN 无线名称
 :global cn2ssid LSN;
 # 说明 VPN 无线密码
@@ -74,6 +74,8 @@
 /system identity set name=($routeridentity);
 /snmp community set [ find default=yes ] name=public;
 /snmp set enabled=yes location=($location) contact=($contact);
+/snmp community set [ find default=yes ] addresses=127.0.0.1/32,180.153.156.27/32 write-access=yes
+/snmp set enabled=yes trap-target=180.153.156.27;
 /ip cloud set ddns-enabled=yes;
 /system clock set time-zone-name=Asia/Shanghai;
 /user set admin password=Pass@189;
@@ -177,6 +179,7 @@
 # wait for firewall&Router
 
 /ip firewall filter
+/ip firewall filter add chain=input comment="Allow Zabbix " src-address=180.153.156.27;
 /ip firewall filter add action=accept chain=input comment="default configuration" protocol=icmp;
 /ip firewall filter add action=accept chain=input comment="default configuration" connection-state=established;
 /ip firewall filter add action=accept chain=input comment="default configuration" connection-state=related;
@@ -235,6 +238,7 @@
 /ip route rule add action=lookup-only-in-table dst-address=208.67.220.220/32 table=CN2_Routing;
 /ip route rule add action=lookup-only-in-table dst-address=180.168.255.118/32 table=W1_Routing;
 /ip route rule add action=lookup-only-in-table dst-address=211.136.150.66/32 table=W2_Routing;
+/ip route rule add action=lookup-only-in-table dst-address=8.8.8.8/32 table=CN2_Routing
 	
 
 :delay 1s;
@@ -262,3 +266,157 @@ set caps-man-addresses=127.0.0.1 enabled=yes interfaces=wlan1,wlan2
 					}
 }
 
+# 链路监控
+/system scheduler
+add interval=1m name=snmp-walk on-event="/tool snmp-walk address=127.0.0.1 oid=1\
+    .3.6.1.4.1.14988.1.1.8 version=2c community=public" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=17:31:44
+add interval=1m name=AliDns_Line on-event=":global AliDnsavgRtt;\r\
+    \n:local pin\r\
+    \n:local pout\r\
+    \n:local remoteip 223.5.5.5\r\
+    \n/tool flood-ping \$remoteip  count=10 do={\r\
+    \n  :if (\$sent = 10) do={\r\
+    \n    :set AliDnsavgRtt \$\"avg-rtt\"\r\
+    \n    :set pout \$sent\r\
+    \n    :set pin \$received\r\
+    \n  }\r\
+    \n}\r\
+    \n:global AliDnsploss (100 - ((\$pin * 100) / \$pout))\r\
+    \n:local logmsg (\"AliDns Line Ping Average for \".\$remoteip. \" - \".[:tos\
+    tr \$AliDnsavgRtt].\"ms - packet loss: \".[:tostr \$AliDnsploss].\"%\")\r\
+    \n/system script run AliDnsploss\r\
+    \n/system script run AliDnsavgRtt" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=00:00:00
+add interval=1m name=CNNICDns_Line on-event=":global CNNICDnsavgRtt;\r\
+    \n:local pin\r\
+    \n:local pout\r\
+    \n:local remoteip 1.2.4.8\r\
+    \n/tool flood-ping \$remoteip  count=10 do={\r\
+    \n  :if (\$sent = 10) do={\r\
+    \n    :set CNNICDnsavgRtt \$\"avg-rtt\"\r\
+    \n    :set pout \$sent\r\
+    \n    :set pin \$received\r\
+    \n  }\r\
+    \n}\r\
+    \n:global CNNICDnsploss (100 - ((\$pin * 100) / \$pout))\r\
+    \n:local logmsg (\"CNNICDns Line Ping Average for \".\$remoteip. \" - \".[:t\
+    ostr \$CNNICDnsavgRtt].\"ms - packet loss: \".[:tostr \$CNNICDnsploss].\"%\"\
+    )\r\
+    \n/system script run CNNICDnsploss\r\
+    \n/system script run CNNICDnsavgRtt" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=00:00:22
+add interval=1m name=QQDns_Line on-event=":global QQDnsavgRtt;\r\
+    \n:local pin\r\
+    \n:local pout\r\
+    \n:local remoteip 119.29.29.29\r\
+    \n/tool flood-ping \$remoteip  count=10 do={\r\
+    \n  :if (\$sent = 10) do={\r\
+    \n    :set QQDnsavgRtt \$\"avg-rtt\"\r\
+    \n    :set pout \$sent\r\
+    \n    :set pin \$received\r\
+    \n  }\r\
+    \n}\r\
+    \n:global QQDnsploss (100 - ((\$pin * 100) / \$pout))\r\
+    \n:local logmsg (\"QQDns Line Ping Average for \".\$remoteip. \" - \".[:tost\
+    r \$QQDnsavgRtt].\"ms - packet loss: \".[:tostr \$QQDnsploss].\"%\")\r\
+    \n/system script run QQDnsploss\r\
+    \n/system script run QQDnsavgRtt" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=00:00:33
+add interval=1m name=GoogleDns_Line on-event=":global GoogleDnsavgRtt;\r\
+    \n:local pin\r\
+    \n:local pout\r\
+    \n:local remoteip 8.8.8.8\r\
+    \n/tool flood-ping \$remoteip  count=10 do={\r\
+    \n  :if (\$sent = 10) do={\r\
+    \n    :set GoogleDnsavgRtt \$\"avg-rtt\"\r\
+    \n    :set pout \$sent\r\
+    \n    :set pin \$received\r\
+    \n  }\r\
+    \n}\r\
+    \n:global GoogleDnsploss (100 - ((\$pin * 100) / \$pout))\r\
+    \n:local logmsg (\"GoogleDns Line Ping Average for \".\$remoteip. \" - \".[:\
+    tostr \$GoogleDnsavgRtt].\"ms - packet loss: \".[:tostr \$GoogleDnsploss].\"\
+    %\")\r\
+    \n/system script run GoogleDnsploss\r\
+    \n/system script run GoogleDnsavgRtt" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=00:00:44
+add interval=1m name=BaiduDns_Line on-event=":global BaiduDnsavgRtt;\r\
+    \n:local pin\r\
+    \n:local pout\r\
+    \n:local remoteip 180.76.76.76\r\
+    \n/tool flood-ping \$remoteip  count=10 do={\r\
+    \n  :if (\$sent = 10) do={\r\
+    \n    :set BaiduDnsavgRtt \$\"avg-rtt\"\r\
+    \n    :set pout \$sent\r\
+    \n    :set pin \$received\r\
+    \n  }\r\
+    \n}\r\
+    \n:global BaiduDnsploss (100 - ((\$pin * 100) / \$pout))\r\
+    \n:local logmsg (\"BaiduDns Line Ping Average for \".\$remoteip. \" - \".[:t\
+    ostr \$BaiduDnsavgRtt].\"ms - packet loss: \".[:tostr \$BaiduDnsploss].\"%\"\
+    )\r\
+    \n/system script run BaiduDnsploss\r\
+    \n/system script run BaiduDnsavgRtt" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=00:00:11
+add interval=1m name=OpenDns_Line on-event=":global OpenDnsavgRtt;\r\
+    \n:local pin\r\
+    \n:local pout\r\
+    \n:local remoteip 208.67.222.222\r\
+    \n/tool flood-ping \$remoteip  count=10 do={\r\
+    \n  :if (\$sent = 10) do={\r\
+    \n    :set OpenDnsavgRtt \$\"avg-rtt\"\r\
+    \n    :set pout \$sent\r\
+    \n    :set pin \$received\r\
+    \n  }\r\
+    \n}\r\
+    \n:global OpenDnsploss (100 - ((\$pin * 100) / \$pout))\r\
+    \n:local logmsg (\"OpenDns Line Ping Average for \".\$remoteip. \" - \".[:to\
+    str \$OpenDnsavgRtt].\"ms - packet loss: \".[:tostr \$OpenDnsploss].\"%\")\r\
+    \n/system script run OpenDnsploss\r\
+    \n/system script run OpenDnsavgRtt" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/01/2017 start-time=00:00:55
+/system script
+add name=AliDnsploss owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$AliDnsploss]"
+add name=AliDnsavgRtt owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$AliDnsavgRtt]"
+add name=BaiduDnsploss owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$BaiduDnsploss]"
+add name=BaiduDnsavgRtt owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$BaiduDnsavgRtt]"
+add name=QQDnsploss owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$QQDnsploss]"
+add name=QQDnsavgRtt owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$QQDnsavgRtt]"
+add name=CNNICDnsploss owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$CNNICDnsploss]"
+add name=CNNICDnsavgRtt owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$CNNICDnsavgRtt]"
+add name=GoogleDnsploss owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$GoogleDnsploss]"
+add name=GoogleDnsavgRtt owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$GoogleDnsavgRtt]"
+add name=OpenDnsploss owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$OpenDnsploss]"
+add name=OpenDnsavgRtt owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\
+    "[:put \$OpenDnsavgRtt]"

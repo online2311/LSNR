@@ -6,18 +6,11 @@
 
 :delay 2s;
 
-:global wirelessEnabled 0;
 :global wirelessNumber 0;
 :global interfaceNumber 0;
 
-
 :set interfaceNumber [/interface ethernet print count-only] 
 :set wirelessNumber [/interface wireless print count-only] 
-
-:if ([:len [/system package find name="wireless" !disabled]] != 0) do={
-:set wirelessEnabled 1;
-}
-
 
 # wait for System
 
@@ -50,27 +43,10 @@
 
 
 # wait for wireless
-:log info "wirelessEnabled:$wirelessEnabled"
-:log info "wirelessNumber:$wirelessNumber
 
-:if ( $wirelessEnabled = 1) do={
-
-:if ( $wirelessNumber = 1) do={
-/interface wireless cap set enabled=yes interfaces=wlan1		
-					}
-
-:if ( $wirelessNumber = 2) do={
-/interface wireless cap set enabled=yes interfaces=wlan1,wlan2
-					}
-					
-:if ( $wirelessNumber = 3) do={
-/interface wireless cap set enabled=yes interfaces=wlan1,wlan2,wlan3
-					}
-
-:if ( $wirelessNumber = 4) do={
-/interface wireless cap set enabled=yes interfaces=wlan1,wlan2,wlan3,wlan3
-					}
-
-}
+:if ( $wirelessNumber = 1) do={/interface wireless cap set enabled=yes interfaces=wlan1;}
+:if ( $wirelessNumber = 2) do={/interface wireless cap set enabled=yes interfaces=wlan1,wlan2;}
+:if ( $wirelessNumber = 3) do={/interface wireless cap set enabled=yes interfaces=wlan1,wlan2,wlan3;}
+:if ( $wirelessNumber = 4) do={/interface wireless cap set enabled=yes interfaces=wlan1,wlan2,wlan3,wlan4;}
 
 

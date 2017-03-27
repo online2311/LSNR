@@ -1,10 +1,10 @@
 # 适用于 Routeros 6.37 版本
-# LSNA 版本号 V1.0.0
+# LSNA 版本号 V1.1.1228
 
 
 # system 相关函数定义
 # 说明 设备名称（客户名称或者其他标记）
-:global routeridentity LSNA-Router;
+:global routeridentity LSNA;
 # 说明 设备安装地址 
 :global location ShangHai;
 # 说明 设备安装人员联系方式 
@@ -13,25 +13,25 @@
 
 # w1 相关函数定义
 # 说明 W1 接入模式 PPPoe = 0 StaticIP = 2 disabled = 3
-:global w1mode 0
+:global w1mode 2
 # 说明 pppoe 账号
-:global w1usr w1user;
+:global w1usr 090011488743;
 # 说明 pppoe 密码
-:global w1pw w1password;
+:global w1pw cb574793;
 # 说明 Static IP
-:global w1ip 111.30.64.211/29;
+:global w1ip 180.168.254.13/24;
 # 说明 Static GW
-:global w1gw 111.30.64.210;
+:global w1gw 180.168.254.1;
 # 说明 无线 SSID
-:global w1ssid i1-189;
+:global w1ssid LSNAi-189;
 # 说明 无线 密码
 :global w1ssidpw Hello189;
 
 # cn2 相关函数定义
 # 说明 VPN 账号
-:global cn2usr lsnuser;
+:global cn2usr xubaohua;
 # 说明 VPN 密码
-:global cn2pw lsnpassword;
+:global cn2pw Hello189;
 # 说明 是否禁用VPN服务
 :global cn2disabled no;
 # 说明 VPN接入服务器地址
@@ -62,6 +62,7 @@
 /interface ethernet set ether4 master-port=ether2;
 /interface ethernet set ether5 master-port=ether2;
 /interface bridge add name=bridge_W1 disabled=($w1disabled);
+/interface bridge port add bridge=bridge_W1 interface=ether2;
 
 /interface
 :if ( $cn2mode = 1) do={ /interface pptp-client add comment=($cn2server) connect-to=($cn2server)  add-default-route=yes disabled=($cn2disabled) name=lsn-vpn password=($cn2pw) user=($cn2usr); }
@@ -80,7 +81,7 @@
 
 
 /ip pool add name=dhcp_pool ranges=10.189.189.50-10.189.189.189;
-/ip dhcp-server add add-arp=yes address-pool=dhcp_pool disabled=($w1disabled) interface=ether2 lease-time=1d name=dhcp1;
+/ip dhcp-server add add-arp=yes address-pool=dhcp_pool disabled=($w1disabled) interface=bridge_W1 lease-time=1d name=dhcp1;
 /ip dhcp-server network add address=10.189.189.0/24 caps-manager=10.189.189.1 dns-server=180.168.254.8 gateway=10.189.189.1;
 	
 	
