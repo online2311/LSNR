@@ -1,52 +1,66 @@
 ﻿#LSNR
-当前脚本适用于 [routeros-mipsbe-6.37](http://download2.mikrotik.com/routeros/6.37/routeros-mipsbe-6.37.npk)  版本 
- LSNR.rsc 适配设备型号：
+当前脚本适用于 [routeros-mipsbe-6.38.5](http://download2.mikrotik.com/routeros/6.38.5/routeros-mipsbe-6.38.5.npk)  版本 
+ LSNR.rsc 适用硬件型号：
 ```
- hEX lite
- hEX PoE lite
- hEX
- hAP
- hAP ac lite
- hAP ac
- RB951Ui-2HnD
- RB951G-2HnD
- RB850G
+LSNR.R (主路由器): 750系列（750Gr2、750Gr3)、850G、952Ui系列、962系列、960系列。
+LSNR.P (有线与无线扩展):wAP 系列、952Ui系列、962Ui系列。
 ```
 
 ##变量设定 
 ```
-:global w1mode 0; 		# 说明 W1 接入模式 PPPoe = 0 dynamicIP = 1 StaticIP = 2
-:global w1usr w1user; 		# 说明 W1 pppoe 账号
-:global w1pw w1password;	# 说明 W1 pppoe 密码
-:global w1ip 111.30.64.211/29; 	# 说明 W1 Static IP
-:global w1gw 111.30.64.210;	# 说明 W1 Static GW
-:global w1ssid i1-189;		# 说明 W1 无线 SSID
-:global w1ssidpw Hello189;	# 说明 W1 无线 密码
-:global w1disabled no;		# 说明 W1 是否禁用
+# system 相关函数定义
+# 说明 设备名称（客户名称或者其他标记）
+:global routeridentity LSNR-Router;
+# 说明 设备安装地址 
+:global location ShangHai;
+# 说明 设备安装人员联系方式 
+:global contact 1300000000;
+# DNS劫持 开启=0 关闭=1
+:global dnsmode 0
+# TopUrl 开启=0 关闭=1
+:global topurl 0
 
-:global w2mode 1		# 说明 W1 接入模式 PPPoe = 0 dynamicIP = 1 StaticIP = 2
-:global w2usr w2user;		# 说明 W2 pppoe 账号
-:global w2pw w1password;	# 说明 W2 pppoe 密码
-:global w2ip 111.30.213.211/29; # 说明 W2 Static IP
-:global w2gw 111.30.213.210;	# 说明 W2 Static GW
-:global w2ssid i2-139;		# 说明 W2 无线 SSID
-:global w2ssidpw Hello189;	# 说明 W2 无线 密码
-:global w2disabled no;		# 说明 W2 是否禁用
 
-:global cn2usr lsnuser;		# 说明 LSN 账号
-:global cn2pw lsnpassword;	# 说明 LSN 密码
-:global cn2ssid LSN;		# 说明 LSN 无线名称
-:global cn2ssidpw Hello189;	# 说明 LSN 无线密码
-:global cn2disabled no;		# 说明 是否禁用VPN服务
-:global cn2server ca17.189lab.cn;# 说明 VPN接入服务器地址
-:global cn2mode 3;		# 说明 VPN接入协议 PPTP = 1 L2TP = 2 SSTP = 3
-:global cn2secret ca17;		# 说明 L2TP 预知共享密钥
-  
+# w1 相关函数定义
+# 说明 W1 接入模式 PPPoe = 0 DHCP = 1 StaticIP = 2 disabled = 3
+:global w1mode 0
+# 说明 W1 pppoe 账号
+:global w1usr pppoeuser;
+# 说明 W1 pppoe 密码
+:global w1pw pppoepw;
+# 说明 W1 Static IP
+:global w1ip 192.168.1.189/24;
+# 说明 W1 Static GW
+:global w1gw 192.168.1.1;
+# 说明 W1 无线 SSID
+:global w1ssid i189;
+# 说明 W1 无线 密码
+:global w1ssidpw Hello189;
+# 说明 W1 是否禁用
+:global w1disabled no;
+
+# cn2 相关函数定义
+# 说明 VPN 账号
+:global cn2usr lsnuser;
+# 说明 VPN 密码
+:global cn2pw lsnpw;
+# 说明 VPN 无线名称
+:global cn2ssid LSN;
+# 说明 VPN 无线密码
+:global cn2ssidpw Hello189;
+# 说明 是否禁用VPN服务
+:global cn2disabled no;
+# 说明 VPN接入服务器地址
+:global cn2server ca17.189lab.cn;
+# 说明 VPN接入协议 PPTP = 1 L2TP = 2 SSTP = 3
+:global cn2mode 3;
+# 说明 L2TP 预知共享密钥
+:global cn2secret ca17;
 ```
 
 
 ##使用说明
-  设备版本升级至 6.37 ，把LSNR.rsc 拖放到 flash/ 目录下。
+  设备版本升级至 6.38 ，把LSNR.rsc 拖放到 flash/ 目录下。
 ```
 /system reset-configuration no-defaults=yes run-after-reset=flash/LSNR.rsc
 ```
