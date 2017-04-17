@@ -71,9 +71,12 @@
 /ip service set ssh disabled=yes;
 /ip service set api disabled=yes;
 
-
-
-
+# wait for graphing
+/tool graphing  {
+		interface add
+		resource add
+	}
+	
 :delay 1s;
 # wait for interfaces
 
