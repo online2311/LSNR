@@ -1,12 +1,14 @@
-﻿#LSNR
-当前脚本适用于 [routeros-mipsbe-6.38.5](http://download2.mikrotik.com/routeros/6.38.5/routeros-mipsbe-6.38.5.npk)  版本 
- LSNR.rsc 适用硬件型号：
+#LSNR
+当前脚本适用于 6.40以后版本 固件
+
+适用硬件型号：
 ```
-LSNR.R (主路由器): 750系列（750Gr2、750Gr3)、850G、952Ui系列、962系列、960系列。
-LSNR.P (有线与无线扩展):wAP 系列、952Ui系列、962Ui系列。
+LSNR (主路由器): 750系列（750Gr2、750Gr3)、850G、952Ui系列、962系列、960系列。
+LSNP (有线与无线扩展):wAP 系列、952Ui系列、962Ui系列。
+LSNA RB750Gr3、RB960GSP、RB1100AHx4、CCR1009-8G-1C-1S+。
 ```
 
-##变量设定 
+##变量设定
 ```
 # system 相关函数定义
 # 说明 设备名称（客户名称或者其他标记）
@@ -58,10 +60,9 @@ LSNR.P (有线与无线扩展):wAP 系列、952Ui系列、962Ui系列。
 :global cn2secret ca17;
 ```
 
-
 ##使用说明
-  设备版本升级至 6.38 ，把LSNR.rsc 拖放到 flash/ 目录下。
+设备版本升级至 6.38 ，把LSNR.rsc 拖放到 flash/ 目录下。
 ```
 /system reset-configuration no-defaults=yes run-after-reset=flash/LSNR.rsc
 ```
-  执行以上命令进行配置导入
+执行以上命令进行配置导入

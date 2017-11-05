@@ -1,18 +1,18 @@
-# ÊÊÓÃÓÚ Routeros 6.38+ °æ±¾
-# LSNR.P °æ±¾ºÅ V1.1.b0417
+# é€‚ç”¨äº Routeros 6.38+ ç‰ˆæœ¬
+# LSNR.P ç‰ˆæœ¬å· V1.1.b0417
 
-# LSN Â·ÓÉÆ÷ ¸½Êô AP ÅäÖÃËµÃ÷
-# È«²¿¶Ë¿ÚÆôÓÃ½»»»¡£
-# ether1 ¶Ë¿Ú ×Ô¶¯»ñÈ¡ ÉÏ¼¶Â·ÓÉÆ÷·ÖÅäµ½µÄIPµØÖ·¡£
-# ×Ô¶¯°ÑÎŞÏß½Ó¿Ú¼ÓÈëµ½CAPÁĞ±í£¬ÓÉÉÏ¼¶DHCP ·ÖÅä Capcman µØÖ· 
+# LSN è·¯ç”±å™¨ é™„å± AP é…ç½®è¯´æ˜
+# å…¨éƒ¨ç«¯å£å¯ç”¨äº¤æ¢ã€‚
+# ether1 ç«¯å£ è‡ªåŠ¨è·å– ä¸Šçº§è·¯ç”±å™¨åˆ†é…åˆ°çš„IPåœ°å€ã€‚
+# è‡ªåŠ¨æŠŠæ— çº¿æ¥å£åŠ å…¥åˆ°CAPåˆ—è¡¨ï¼Œç”±ä¸Šçº§DHCP åˆ†é… Capcman åœ°å€
 
 :delay 2s;
 
 :global wirelessNumber 0;
 :global interfaceNumber 0;
 
-:set interfaceNumber [/interface ethernet print count-only] 
-:set wirelessNumber [/interface wireless print count-only] 
+:set interfaceNumber [/interface ethernet print count-only]
+:set wirelessNumber [/interface wireless print count-only]
 
 # wait for System
 
@@ -152,5 +152,3 @@
 :if ( $wirelessNumber = 2) do={/interface wireless cap set enabled=yes interfaces=wlan1,wlan2;}
 :if ( $wirelessNumber = 3) do={/interface wireless cap set enabled=yes interfaces=wlan1,wlan2,wlan3;}
 :if ( $wirelessNumber = 4) do={/interface wireless cap set enabled=yes interfaces=wlan1,wlan2,wlan3,wlan4;}
-
-
