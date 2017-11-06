@@ -118,6 +118,7 @@ set api-ssl disabled=yes;
 		port add bridge=bridge_Network interface=ether3;
 		port add bridge=bridge_Network interface=ether4;
 		port add bridge=bridge_Network interface=ether5;
+		port add bridge=bridge_Network interface=sfp1;
 			}
 				}
 :if ( $board = "RB850Gx2" ) do={

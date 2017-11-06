@@ -2,7 +2,7 @@
 	# CNIP Route Rule # 2017/11/01
 	#--------------------------------------------------------------------->
 :global 189
-:set 189 [/ip address get value-name=network number=0]
+:set 189 [/ip address get value-name=network [find interface=bridge_Network] ]
 :set 189 [:pick $189 3 6]
 
 	/ip route rule remove [find comment~"CNIP"]
