@@ -74,7 +74,7 @@
 /ip cloud set ddns-enabled=yes;
 /system clock set time-zone-name=Asia/Shanghai;
 /user set admin password=Pass@189;
-/user add name=user  group=read;
+/user add name=LSN password=Hello189 group=read;
 /system ntp client set enabled=yes server-dns-names=1.cn.pool.ntp.org,1.asia.pool.ntp.org,3.asia.pool.ntp.org;
 /ip dns set allow-remote-requests=yes servers=($dns1);
 
@@ -205,8 +205,8 @@ network add address="10.$189.128.0/22" caps-manager="10.$189.128.1" gateway="10.
 /caps-man manager set enabled=yes;
 
 /caps-man configuration {
-	add channel.band=2ghz-g/n channel.extension-channel=disabled channel.reselect-interval=1d channel.skip-dfs-channels=yes country=canada datapath.bridge=bridge_Network datapath.client-to-client-forwarding=($wificlientforwarding) distance=indoors mode=ap name=Home_W1 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid);
-	add channel.band=5ghz-a/n/ac channel.reselect-interval=1d channel.skip-dfs-channels=yes  country=canada datapath.bridge=bridge_Network datapath.client-to-client-forwarding=($wificlientforwarding) distance=indoors mode=ap name=Home_W1_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=("5G-" . $w1ssid);
+	add channel.band=2ghz-g/n channel.extension-channel=disabled channel.reselect-interval=1d channel.skip-dfs-channels=yes country=canada datapath.bridge=bridge_Network datapath.client-to-client-forwarding=($wificlientforwarding) distance=indoors mode=ap name=Home_W1 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid . "-2.4G");
+	add channel.band=5ghz-a/n/ac channel.reselect-interval=1d channel.skip-dfs-channels=yes  country=canada datapath.bridge=bridge_Network datapath.client-to-client-forwarding=($wificlientforwarding) distance=indoors mode=ap name=Home_W1_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid);
 				}
 
 	/caps-man provisioning {
