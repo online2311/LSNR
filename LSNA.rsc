@@ -267,7 +267,7 @@ add dst-address=0.0.0.0/0 src-address="10.$189.130.0/24" table=main;
 
 /system scheduler
 add interval=1w name=CNIP_update on-event="\r\
-    \n/tool fetch url=http://routeros-device-config.oss-cn-shanghai.aliyuncs.com/LSNA/LSNA_CNIP.rsc  mode=http\r\
+    \n/tool fetch url=https://raw.githubusercontent.com/online2311/LSNR/master/LSNA_CNIP.rsc  mode=http\r\
     \n:delay 15s;\r\
     \n/import LSNA_CNIP.rsc\r\
     \n/file remove LSNA_CNIP.rsc\r\
@@ -285,7 +285,7 @@ add interval=1w name=CNIP_update on-event="\r\
 # 第一次联网后自动下载CNIP路由表。
 /system script	{
  add name=CNIP owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="\r\
-	\n/tool fetch url=http://routeros-device-config.oss-cn-shanghai.aliyuncs.com/LSNA/LSNA_CNIP.rsc  mode=http\r\
+	\n/tool fetch url=https://raw.githubusercontent.com/online2311/LSNR/master/LSNA_CNIP.rsc  mode=http\r\
 	\n:delay 15s;\r\
 	\n/import LSNA_CNIP.rsc  \r\
 	\n/file remove LSNA_CNIP.rsc\r\

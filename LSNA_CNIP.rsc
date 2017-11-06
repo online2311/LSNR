@@ -5241,3 +5241,4 @@
 	add dst-address=223.255.252.0/23 src-address="10.$189.131.0/24" table=main comment=CNIP;
 	add dst-address=0.0.0.0/0 src-address="10.$189.131.0/24" table=CN2_Routing comment=CNIP;
 				}
+:log info "CNIP scripts are imported successfully"
