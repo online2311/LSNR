@@ -8,16 +8,8 @@
 :global location "ShangHai";
 # 说明 设备安装人员联系方式
 :global contact "1300000000";
-:global 189 "189"
-# DNS劫持 开启=no 关闭=yes
-:global dnsmode "yes";
-:global DNShijacking "180.168.254.8";
-# 路由器DNS设置
-:global dns1 "180.168.254.8,8.8.8.8,8.8.6.6,208.67.222.222,208.67.220.220,199.85.126.10,199.85.127.10"
-#设置Dhcp 默认地址池 （ 不翻墙=0 翻墙=1 ）
-:global poolmode "0"
 
-# w1 相关函数定义
+# 宽带接入 相关函数定义
 # 说明 W1 接入模式 PPPoe = 0 DHCP = 1 StaticIP = 2 disabled = 3
 :global w1mode "1"
 # 说明 W1 pppoe 账号
@@ -32,15 +24,14 @@
 :global w1ssid "i189";
 # 说明 W1 无线 密码
 :global w1ssidpw "Hello189";
-# 说明 W1 是否禁用
 
-# cn2 相关函数定义
+# VPN接入 相关函数定义
+# 说明 是否禁用VPN服务 禁用=yes 启用=no
+:global cn2disabled "no";
 # 说明 VPN 账号
 :global cn2usr "lsnauser";
 # 说明 VPN 密码
 :global cn2pw "20171024";
-# 说明 是否禁用VPN服务
-:global cn2disabled "no";
 # 说明 VPN接入服务器地址
 :global cn2server "ca17e.189lab.cn";
 # 说明 VPN接入协议 PPTP = 1 L2TP = 2 SSTP = 3
@@ -48,9 +39,27 @@
 # 说明 L2TP 预知共享密钥
 :global cn2secret "ca17";
 
-# 网内用户速度限制 默认 下载10M 上传2M 
+##############################系统高级配置选项#####################################
+# IP 网段  *.($189).*.* 选项
+:global 189 "189"
+
+# 网内用户速度限制 默认 下载10M 上传2M（如果无限制 请改为 1000M）
 :global pcqdownload "10M";
 :global pcqup "2M";
+
+# 无线客户端转发 启用=yes 禁用=no
+:global wificlientforwarding "yes";
+
+# DNS 劫持  开启=no 关闭=yes 默认劫持至 180.168.254.8
+:global dnsmode "yes";
+:global DNShijacking "180.168.254.8";
+
+# 路由器DNS设置
+:global dns1 "180.168.254.8,8.8.8.8,8.8.6.6,208.67.222.222,208.67.220.220,199.85.126.10,199.85.127.10"
+
+#设置Dhcp 默认地址池 （ 不翻墙=0 翻墙=1 ）
+:global poolmode "0"
+##############################系统高级配置选项#####################################
 
 
 ##############################非开发人员，请勿修改一下脚本#####################################
@@ -98,7 +107,7 @@ set api-ssl disabled=yes;
 	port add bridge=bridge_Network interface=ether5;
 	}
 		}
-						
+
 :if ( $board = "CCR1009-7G-1C-1S+" ) do={
 	/interface bridge {
 	add name=bridge_Network disabled=($w1disabled);
@@ -174,8 +183,8 @@ network add address="10.$189.128.0/22" caps-manager="10.$189.128.1" gateway="10.
 /caps-man manager set enabled=yes;
 
 /caps-man configuration {
-	add channel.band=2ghz-g/n channel.extension-channel=disabled channel.reselect-interval=1d channel.skip-dfs-channels=yes country=canada datapath.bridge=bridge_Network datapath.bridge-horizon=1 distance=indoors mode=ap name=Home_W1 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid) hide-ssid=($w1disabled);
-	add channel.band=5ghz-a/n/ac channel.reselect-interval=1d channel.skip-dfs-channels=yes  country=canada datapath.bridge=bridge_Network datapath.bridge-horizon=1 distance=indoors mode=ap name=Home_W1_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=("5G-" . $w1ssid) hide-ssid=($w1disabled);
+	add channel.band=2ghz-g/n channel.extension-channel=disabled channel.reselect-interval=1d channel.skip-dfs-channels=yes country=canada datapath.bridge=bridge_Network datapath.client-to-client-forwarding=($wificlientforwarding) distance=indoors mode=ap name=Home_W1 security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=($w1ssid);
+	add channel.band=5ghz-a/n/ac channel.reselect-interval=1d channel.skip-dfs-channels=yes  country=canada datapath.bridge=bridge_Network datapath.client-to-client-forwarding=($wificlientforwarding) distance=indoors mode=ap name=Home_W1_5G security.authentication-types=wpa-psk,wpa2-psk security.encryption=aes-ccm security.group-encryption=aes-ccm security.passphrase=($w1ssidpw) ssid=("5G-" . $w1ssid);
 				}
 
 	/caps-man provisioning {
@@ -234,7 +243,7 @@ add action=masquerade chain=srcnat out-interface=lsn-vpn disabled=($cn2disabled)
 :delay 1s;
 /ip route {
 :if ( $w1mode = 2) do={/ip route add check-gateway=ping distance=1 gateway=($w1gw) disabled=($w1disabled);}
-add check-gateway=ping distance=1 gateway=lsn-vpn routing-mark=CN2_Routing disabled=($cn2disabled); 
+add check-gateway=ping distance=1 gateway=lsn-vpn routing-mark=CN2_Routing disabled=($cn2disabled);
 :if ( $w1mode = 0) do={/ip route add check-gateway=ping distance=10 gateway=pppoe-W1 routing-mark=CN2_Routing disabled=($cn2disabled);}
 :if ( $w1mode = 2) do={/ip route add check-gateway=ping distance=10 gateway=($w1gw) routing-mark=CN2_Routing disabled=($cn2disabled);}
 		}
@@ -247,11 +256,11 @@ add dst-address=8.8.8.8/32 table=CN2_Routing comment=DNS;
 add dst-address=208.67.220.220/32 table=CN2_Routing comment=DNS;
 add dst-address=10.0.0.0/8 src-address="10.$189.128.0/22" table=main;
 add dst-address=192.168.0.0/16 src-address="10.$189.128.0/22" table=main;
-add dst-address=172.16.0.0/13 src-address="10.$189.128.0/22" table=main; 
+add dst-address=172.16.0.0/13 src-address="10.$189.128.0/22" table=main;
 add dst-address=0.0.0.0/0 src-address="10.$189.128.0/24" table=main;
 add dst-address=0.0.0.0/0 src-address="10.$189.129.0/24" table=main;
-add dst-address=0.0.0.0/0 src-address="10.$189.130.0/24" table=main; 
-# add dst-address=0.0.0.0/0 src-address="10.$189.131.0/24" table=CN2_Routing; 
+add dst-address=0.0.0.0/0 src-address="10.$189.130.0/24" table=main;
+# add dst-address=0.0.0.0/0 src-address="10.$189.131.0/24" table=CN2_Routing;
 # 默认全部都走VPN ，不进行国内国外IP区分。
 		}
 
@@ -269,7 +278,7 @@ add interval=1w name=CNIP_update on-event="\r\
 :global dhcpgateway;
 :set dhcpgateway [/ip dhcp-client get number=0 gateway]
 /ip route add check-gateway=ping distance=10 gateway=($dhcpgateway) routing-mark=CN2_Routing disabled=($cn2disabled);
-				}; 
+				};
 # 设备配置导入成功以后，更改设备名称。
 /system identity set name=($routeridentity);
 
@@ -281,9 +290,10 @@ add interval=1w name=CNIP_update on-event="\r\
 	\n/import LSNA_CNIP.rsc  \r\
 	\n/file remove LSNA_CNIP.rsc\r\
 	\n "	}
- 
+
 /tool netwatch	{
 	add host=8.8.8.8 up-script="/system script run CNIP;\r\
 	\n/tool netwatch remove numbers=0\r\
 	\n/system script remove CNIP"
 				}
+##############################非开发人员，请勿修改一下脚本#####################################
