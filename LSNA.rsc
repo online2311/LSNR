@@ -29,9 +29,9 @@
 # 说明 是否禁用VPN服务 禁用=yes 启用=no
 :global cn2disabled "no";
 # 说明 VPN 账号
-:global cn2usr "lsnauser";
+:global cn2usr "LSNA";
 # 说明 VPN 密码
-:global cn2pw "20171024";
+:global cn2pw "Hello189";
 # 说明 VPN接入服务器地址
 :global cn2server "ca17e.189lab.cn";
 # 说明 VPN接入协议 PPTP = 1 L2TP = 2 SSTP = 3
@@ -48,7 +48,7 @@
 :global pcqup "2M";
 
 # 无线客户端转发 启用=yes 禁用=no
-:global wificlientforwarding "yes";
+:global wificlientforwarding "no";
 
 # DNS 劫持  开启=no 关闭=yes 默认劫持至 180.168.254.8
 :global dnsmode "yes";
@@ -179,11 +179,11 @@ add address="10.$189.128.1/22" interface=bridge_Network network="10.$189.128.0" 
 }
 
 /ip pool {
-# add name=dhcp_pool ranges="10.$189.129.1-10.$189.130.255";
-# 默认不翻墙的 DHCP 地址池 （10.$189.129.1-10.$189.130.255）
-:if ( $poolmode = 0) do={ add name=dhcp_pool ranges="10.$189.129.1-10.$189.130.255"}
-# 默认翻墙的 DHCP 地址池 （10.$189.131.1-10.$189.131.255）
-:if ( $poolmode = 1) do={ add name=dhcp_pool ranges="10.$189.131.1-10.$189.131.255"}
+# add name=dhcp_pool ranges="10.$189.129.1-10.$189.130.254";
+# 默认不翻墙的 DHCP 地址池 （10.$189.129.1-10.$189.130.254）
+:if ( $poolmode = 0) do={ add name=dhcp_pool ranges="10.$189.129.1-10.$189.130.254"}
+# 默认翻墙的 DHCP 地址池 （10.$189.131.1-10.$189.131.254）
+:if ( $poolmode = 1) do={ add name=dhcp_pool ranges="10.$189.131.1-10.$189.131.254"}
 
 }
 /ip dhcp-server {
