@@ -11,7 +11,7 @@
 
 # 宽带接入 相关函数定义
 # 说明 W1 接入模式 PPPoe = 0 DHCP = 1 StaticIP = 2 disabled = 3
-:global w1mode "1"
+:global w1mode "1";
 # 说明 W1 pppoe 账号
 :global w1usr "pppoeuser";
 # 说明 W1 pppoe 密码
@@ -41,7 +41,7 @@
 
 ##############################系统高级配置选项#####################################
 # IP 网段  *.($189).*.* 选项
-:global 189 "189"
+:global 189 "189";
 
 # 网内用户速度限制 默认 下载10M 上传2M（如果无限制 请改为 1000M）
 :global pcqdownload "10M";
@@ -55,24 +55,17 @@
 :global DNShijacking "180.168.254.8";
 
 # 路由器DNS设置
-:global dns1 "180.168.254.8,8.8.8.8,8.8.6.6,208.67.222.222,208.67.220.220,199.85.126.10,199.85.127.10"
+:global dns1 "180.168.254.8,8.8.8.8,8.8.6.6,208.67.222.222,208.67.220.220,199.85.126.10,199.85.127.10";
 
 #设置Dhcp 默认地址池 （ 不翻墙=0 翻墙=1 ）
-:global poolmode "0"
+:global poolmode "0";
 ##############################系统高级配置选项#####################################
 
 
 ##############################非开发人员，请勿修改一下脚本#####################################
-#接入远程管理平台
-:global sn
-:set sn [/system routerboard get serial-number]
-:global board
-:set board [/system resource get board-name]
-
-/system logging action set 3 remote=100.127.254.254
-/system logging add action=remote prefix=($sn) topics=error
-/system logging add action=remote prefix=($sn) topics=warning
-/interface l2tp-client add name=Manage-links user=$sn password=$sn connect-to=RM.189lab.cn disabled=no;
+/system logging action set 3 remote=100.127.254.254;
+/system logging add action=remote prefix=($sn) topics=error;
+/system logging add action=remote prefix=($sn) topics=warning;
 
 # wait for System
 :delay 1s;
@@ -96,46 +89,75 @@ set api-ssl disabled=yes;
 
 # wait for interface
 :delay 1s;
+:global board;
+:set board [/system resource get board-name];
+:log info "$board";
 
-
-:if ( $board = "hEX"||$board = "hEX PoE" ) do={:
+:if ( $board = "hEX" ) do={
 	/interface bridge {
-	add name=bridge_Network;
-	port add bridge=bridge_Network interface=ether2;
-	port add bridge=bridge_Network interface=ether3;
-	port add bridge=bridge_Network interface=ether4;
-	port add bridge=bridge_Network interface=ether5;
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
 	}
 		}
-
+:if ( $board = "hEX lite" ) do={
+	/interface bridge {
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
+			}
+				}
+:if ( $board = "hEX PoE" ) do={
+	/interface bridge {
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
+			}
+				}
+:if ( $board = "RB850Gx2" ) do={
+	/interface bridge {
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
+			}
+				}
 :if ( $board = "CCR1009-7G-1C-1S+" ) do={
 	/interface bridge {
-	add name=bridge_Network disabled=($w1disabled);
-	port add bridge=bridge_Network interface=ether2;
-	port add bridge=bridge_Network interface=ether3;
-	port add bridge=bridge_Network interface=ether4;
-	port add bridge=bridge_Network interface=ether5;
-	port add bridge=bridge_Network interface=ether6;
-	port add bridge=bridge_Network interface=ether7;
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
+		port add bridge=bridge_Network interface=ether6;
+		port add bridge=bridge_Network interface=ether7;
 	}
 		}
 :if ( $board = "RB1100AHx4" ) do={
 	/interface bridge {
-	add name=bridge_Network disabled=($w1disabled);
-	port add bridge=bridge_Network interface=ether2;
-	port add bridge=bridge_Network interface=ether3;
-	port add bridge=bridge_Network interface=ether4;
-	port add bridge=bridge_Network interface=ether5;
-	port add bridge=bridge_Network interface=ether6;
-	port add bridge=bridge_Network interface=ether7;
-	port add bridge=bridge_Network interface=ether8;
-	port add bridge=bridge_Network interface=ether9;
-	port add bridge=bridge_Network interface=ether10;
-	port add bridge=bridge_Network interface=ether11;
-	port add bridge=bridge_Network interface=ether12;
-	port add bridge=bridge_Network interface=ether13;
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
+		port add bridge=bridge_Network interface=ether6;
+		port add bridge=bridge_Network interface=ether7;
+		port add bridge=bridge_Network interface=ether8;
+		port add bridge=bridge_Network interface=ether9;
+		port add bridge=bridge_Network interface=ether10;
+		port add bridge=bridge_Network interface=ether11;
+		port add bridge=bridge_Network interface=ether12;
+		port add bridge=bridge_Network interface=ether13;
 	}
 		}
+
 /ip address {
 :if ( $w1mode = 2) do={/ip address add address=($w1ip) interface=ether1 disabled=($w1disabled);}
 }
@@ -264,36 +286,51 @@ add dst-address=0.0.0.0/0 src-address="10.$189.130.0/24" table=main;
 # 默认全部都走VPN ，不进行国内国外IP区分。
 		}
 
+#接入远程管理平台
+/tool netwatch	{
+add down-script="/interface l2tp-client remove [find  name=Manage-links ]" \
+    host=180.153.156.70 up-script=":global sn\r\
+    \n:set sn [/system routerboard get serial-number]\r\
+    \n/interface l2tp-client add name=Manage-links user=\$sn password=\$sn conne\
+    ct-to=RM.189lab.cn disabled=no;"
+	}
 
-/system scheduler
+/system scheduler	{
 add interval=1w name=CNIP_update on-event="\r\
     \n/tool fetch url=https://raw.githubusercontent.com/online2311/LSNR/master/LSNA_CNIP.rsc  mode=http\r\
     \n:delay 15s;\r\
     \n/import LSNA_CNIP.rsc\r\
     \n/file remove LSNA_CNIP.rsc\r\
     \n" policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon start-time=startup
+	}
+
 
 # 设置DHCP网关
 :if ( $w1mode = 1) do={
-:global dhcpgateway;
-:set dhcpgateway [/ip dhcp-client get number=0 gateway]
-/ip route add check-gateway=ping distance=10 gateway=($dhcpgateway) routing-mark=CN2_Routing disabled=($cn2disabled);
-				};
+	/tool netwatch
+	add down-script="/ip route remove [find comment~\"DHCPGW\"]" host=8.8.8.8 \
+	    up-script="\r\
+	    \n:global dhcpgateway;\r\
+	    \n:set dhcpgateway [/ip dhcp-client get number=0 gateway];\r\
+	    \n/ip route remove [find comment~\"DHCPGW\"]\r\
+	    \n/ip route add check-gateway=ping distance=10 gateway=(\$dhcpgateway) routi\
+	    ng-mark=CN2_Routing disabled=(\$cn2disabled) comment=DHCPGW;\r\
+	    \n"
+				}
+
+# 第一次联网后执行自动下载CNIP路由表脚本。
+/tool netwatch	{
+	add comment=CNIP host=8.8.8.8 up-script="\r\
+    \n/tool fetch url=https://raw.githubusercontent.com/online2311/LSNR/master/L\
+    SNA_CNIP.rsc  mode=http;\r\
+    \n:delay 15s;\r\
+    \n/import LSNA_CNIP.rsc;\r\
+    \n/file remove LSNA_CNIP.rsc;\r\
+    \n/tool netwatch remove [find comment=CNIP];\r\
+    \n/system script remove CNIP;"
+				}
+
 # 设备配置导入成功以后，更改设备名称。
 /system identity set name=($routeridentity);
 
-# 第一次联网后自动下载CNIP路由表。
-/system script	{
- add name=CNIP owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="\r\
-	\n/tool fetch url=https://raw.githubusercontent.com/online2311/LSNR/master/LSNA_CNIP.rsc  mode=http\r\
-	\n:delay 15s;\r\
-	\n/import LSNA_CNIP.rsc  \r\
-	\n/file remove LSNA_CNIP.rsc\r\
-	\n "	}
-
-/tool netwatch	{
-	add host=8.8.8.8 up-script="/system script run CNIP;\r\
-	\n/tool netwatch remove numbers=0\r\
-	\n/system script remove CNIP"
-				}
 ##############################非开发人员，请勿修改一下脚本#####################################
