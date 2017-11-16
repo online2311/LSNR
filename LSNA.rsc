@@ -158,7 +158,20 @@ set api-ssl disabled=yes;
 		port add bridge=bridge_Network interface=ether13;
 	}
 		}
-
+:if ( $board = "RB3011UiAS" ) do={
+	/interface bridge {
+		add name=bridge_Network;
+		port add bridge=bridge_Network interface=ether2;
+		port add bridge=bridge_Network interface=ether3;
+		port add bridge=bridge_Network interface=ether4;
+		port add bridge=bridge_Network interface=ether5;
+		port add bridge=bridge_Network interface=ether6;
+		port add bridge=bridge_Network interface=ether7;
+		port add bridge=bridge_Network interface=ether8;
+		port add bridge=bridge_Network interface=ether9;
+		port add bridge=bridge_Network interface=ether10;
+	}
+		}
 /ip address {
 :if ( $w1mode = 2) do={/ip address add address=($w1ip) interface=ether1 disabled=($w1disabled);}
 }
