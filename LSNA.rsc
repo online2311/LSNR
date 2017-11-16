@@ -1,6 +1,8 @@
 # 适用于 Routeros 6.40 以后版本
 # LSNA 版本号 V1.5.1024 开发版本
 
+# 设置LSNA 版本号
+:global version "LSNA V1.5.1024";
 # system 相关函数定义
 # 说明 设备名称（客户名称或者其他标记）
 :global routeridentity "LSNA-1024";
@@ -69,6 +71,7 @@
 
 # wait for System
 :delay 1s;
+/system note set note=$version
 /snmp community set [ find default=yes ] name=public;
 /snmp set enabled=yes location=($location) contact=($contact);
 /ip cloud set ddns-enabled=yes;
